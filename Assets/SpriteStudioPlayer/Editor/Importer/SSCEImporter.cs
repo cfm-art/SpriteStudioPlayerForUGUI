@@ -60,7 +60,7 @@ namespace a.spritestudio.editor
                 return string.Format( "name={0},\nimagePath={1},\nwrap={2},\nfilter={3},\ncellmaps=(\n{4}\n)",
                     name, imagePath,
                     wrapMode, filterMode,
-                    string.Join( ";", (from c in cellMaps select "\t{" + c.ToString() + "}\n").ToArray() ) );
+                    string.Join( ";\n", (from c in cellMaps select "\t{" + c.ToString() + "}").ToArray() ) );
             }
         }
 

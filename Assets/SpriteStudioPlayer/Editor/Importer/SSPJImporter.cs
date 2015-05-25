@@ -21,8 +21,8 @@ namespace a.spritestudio.editor
             public int fps;
             public int frameCount;
             public SortMode sortMode;
-            public int pivotX;
-            public int pivotY;
+            public float pivotX;
+            public float pivotY;
             public ReadOnlyCollection<string> cellMaps;
             public ReadOnlyCollection<string> animePacks;
 
@@ -56,7 +56,7 @@ namespace a.spritestudio.editor
             int fps = animeSettings.AtInteger( "fps" );
             int frameCount = animeSettings.AtInteger( "frameCount" );
             string sortMode = animeSettings.AtText( "sortMode" );
-            int[] pivot = animeSettings.AtIntegers( "pivot", ' ' );
+            float[] pivot = animeSettings.AtFloats( "pivot", ' ' );
 
             var cellMaps = NodeReader.findFirst( xml, "SpriteStudioProject/cellmapNames" );
             var cellMapNames = cellMaps.Children( "value" ).AtText();

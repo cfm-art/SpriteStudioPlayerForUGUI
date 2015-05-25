@@ -47,7 +47,8 @@ namespace a.spritestudio.editor
             }
 
             foreach ( var animation in projectInformation.animePacks ) {
-                new SSAEImporter().Import( path + '\\' + animation );
+                var ssaeInformation = new SSAEImporter().Import( path + '\\' + animation );
+                Debug.Log( ssaeInformation.ToString() );
             }
         }
     }

@@ -45,6 +45,17 @@ namespace a.spritestudio.editor.xml
         }
 
         /// <summary>
+        /// 子供を1つ取得。無ければnull
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public NodeReader ChildOrNull( string tag )
+        {
+            var n = node_.SelectSingleNode( tag );
+            return n != null ? new NodeReader( n ) : null;
+        }
+
+        /// <summary>
         /// 子供を全て取得
         /// </summary>
         /// <param name="tag"></param>
@@ -61,6 +72,21 @@ namespace a.spritestudio.editor.xml
         public NodeReader Next()
         {
             return new NodeReader( node_.NextSibling );
+        }
+
+        /// <summary>
+        /// 属性の取得
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public AttributeReader Attribute( string tag )
+        {
+            foreach ( XmlAttribute attribute in node_.Attributes ) {
+                if ( attribute.Name == tag ) {
+                    return new AttributeReader( attribute );
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -213,7 +239,7 @@ namespace a.spritestudio.editor.xml
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        private static bool IsTrue( string v )
+        public static bool IsTrue( string v )
         {
             if ( v == null ) { return false; }
             if ( "true".Equals( v ) ) { return true; }
