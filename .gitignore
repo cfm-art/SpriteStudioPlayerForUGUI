@@ -1,0 +1,9 @@
+/Library
+/obj
+/Temp
+/*.csproj
+/*.sln
+/*.suo
+/Assets/SampleData/
+/Assets/SampleData.meta
+
