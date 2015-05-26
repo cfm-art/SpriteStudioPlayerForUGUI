@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 
 using a.spritestudio.editor.xml;
@@ -81,6 +83,32 @@ namespace a.spritestudio.editor
         /// </summary>
         public class PartAnimation
         {
+            public string partName;
+
+            public ReadOnlyCollection<SpriteAttribute> attributes;
+
+            public PartAnimation( NodeReader node )
+            {
+                partName = node.AtText( "partName" );
+                var children = node.Child( "attributes" ).Children( "attribute" );
+
+                var results = new List<SpriteAttribute>();
+                foreach ( var child in children ) {
+                    string tag = child.Attribute( "tag" ).AtText();
+                    var targetType = Type.GetType( "a.spritestudio.editor.attribute." + tag );
+                    var attribute = (SpriteAttribute) Activator.CreateInstance( targetType );
+                    attribute.Setup( child );
+                    results.Add( attribute );
+                }
+                attributes = results.AsReadOnly();
+            }
+
+            public override string ToString()
+            {
+                return string.Format( "partName={0}, attributes={1}",
+                    partName,
+                    string.Join( ";\n", (from o in attributes select "\t{" + o.ToString() + "}").ToArray() ) );
+            }
         }
 
         /// <summary>
@@ -102,7 +130,18 @@ namespace a.spritestudio.editor
                 }
 
                 var parts = node.Child( "partAnimes" ).Children( "partAnime" );
-                List<List<PartAnimation>> p;
+                List<PartAnimation> results = new List<PartAnimation>();
+                foreach ( var part in parts ) {
+                    results.Add( new PartAnimation( part ) );
+                }
+                this.parts = results.AsReadOnly();
+            }
+
+            public override string ToString()
+            {
+                return string.Format( "name={0}, settings={1}, parts={2}",
+                    name, settings.ToString(),
+                    string.Join( ";\n", (from o in parts select "\t{" + o.ToString() + "}").ToArray() ) );
             }
         }
 
@@ -153,7 +192,7 @@ namespace a.spritestudio.editor
             var cellMapNames = NodeReader.findFirst( xml, "SpriteStudioAnimePack/cellmapNames" ).Children( "value" );
 
             // アニメーション情報
-            var animeNode = NodeReader.findFirst( xml, "SpriteStudioAnimePack/Model/animeList" ).Children( "anime" );
+            var animeNode = NodeReader.findFirst( xml, "SpriteStudioAnimePack/animeList" ).Children( "anime" );
             var animes = from a in animeNode.Nodes select new Animation( a );
 
             return new Information() {

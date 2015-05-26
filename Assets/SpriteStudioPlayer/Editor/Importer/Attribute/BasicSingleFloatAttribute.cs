@@ -1,14 +1,21 @@
 ﻿namespace a.spritestudio.editor.attribute
 {
-    public class BNDR
+    public class BasicSingleFloatAttribute
         : SpriteAttribute
     {
         /// <summary>
         /// キーフレームの中身
         /// </summary>
-        private class Value
+        protected class Value
             : SpriteAttribute.ValueBase
         {
+            public string ipType;
+            public float value;
+
+            public override string ToString()
+            {
+                return string.Format( "ipType={0}, value={1}", ipType, value );
+            }
         }
 
         /// <summary>
@@ -19,7 +26,11 @@
         /// <returns></returns>
         protected override SpriteAttribute.ValueBase CraeteValue( xml.NodeReader key, xml.NodeReader node )
         {
-            throw new System.NotImplementedException();
+            var ipType = key.Attribute( "ipType" );
+            return new Value() {
+                ipType = ipType != null ? ipType.AtText() : "linear",
+                value = node.AtFloat()
+            };
         }
     }
 }

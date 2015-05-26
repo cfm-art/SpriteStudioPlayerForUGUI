@@ -23,6 +23,14 @@ namespace a.spritestudio.editor.xml
         }
 
         /// <summary>
+        /// 直接XmlNode取得
+        /// </summary>
+        public XmlNode Raw
+        {
+            get { return node_; }
+        }
+
+        /// <summary>
         /// ノードの検索
         /// </summary>
         /// <param name="xml"></param>

@@ -20,12 +20,13 @@ namespace a.spritestudio.editor
             public readonly float[] uv;
             public readonly float[] pivot;
             public readonly bool rotated;
+            public readonly int[] size;
 
             public Cell( NodeReader node, int textureWidth, int textureHeight )
             {
                 name = node.AtText( "name" );
                 int[] pos = node.AtIntegers( "pos", ' ' );
-                int[] size = node.AtIntegers( "size", ' ' );
+                size = node.AtIntegers( "size", ' ' );
                 pivot = node.AtFloats( "pivot", ' ' );
                 rotated = node.AtBoolean( "rotated" );
 

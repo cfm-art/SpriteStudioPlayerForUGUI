@@ -1,14 +1,20 @@
 ﻿namespace a.spritestudio.editor.attribute
 {
-    public class BNDR
+    public class BasicBooleanAttribute
         : SpriteAttribute
     {
         /// <summary>
         /// キーフレームの中身
         /// </summary>
-        private class Value
+        protected class Value
             : SpriteAttribute.ValueBase
         {
+            public bool on;
+
+            public override string ToString()
+            {
+                return on.ToString();
+            }
         }
 
         /// <summary>
@@ -19,7 +25,20 @@
         /// <returns></returns>
         protected override SpriteAttribute.ValueBase CraeteValue( xml.NodeReader key, xml.NodeReader node )
         {
-            throw new System.NotImplementedException();
+            return new Value() {
+                on = node.AtBoolean(),
+            };
+        }
+
+        /// <summary>
+        /// 補間なし
+        /// </summary>
+        protected override bool IsInterpolation
+        {
+            get
+            {
+                return false;
+            }
         }
     }
 }
