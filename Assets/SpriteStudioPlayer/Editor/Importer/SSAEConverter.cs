@@ -50,7 +50,7 @@ namespace a.spritestudio.editor
                                 p.transform.SetParent( partsObjects[part.parent].transform, false );
                             }
                             partsObjects.Add( part.index, p );
-                            sp.Setup( root );
+                            sp.Setup( root, part.type );
 
                             // このパーツに対するアニメーションを探す
                             foreach ( var a in anime.parts ) {

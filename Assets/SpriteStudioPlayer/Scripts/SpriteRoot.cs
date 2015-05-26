@@ -6,6 +6,7 @@ namespace a.spritestudio
     /// <summary>
     /// ルート
     /// </summary>
+    [DisallowMultipleComponent]
     public class SpriteRoot
         : MonoBehaviour
     {

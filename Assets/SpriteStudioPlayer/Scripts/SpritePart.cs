@@ -58,6 +58,11 @@ namespace a.spritestudio
         private List<List<AttributeBase>> keyFrames_;
 
         /// <summary>
+        /// 優先度
+        /// </summary>
+        private int priority_;
+
+        /// <summary>
         /// 親の取得
         /// </summary>
         public SpriteRoot Root
@@ -77,17 +82,48 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// 優先度
+        /// </summary>
+        public int Priority
+        {
+            get { return priority_; }
+            set {
+                priority_ = value;
+                List<SpritePart> siblings = new List<SpritePart>();
+                Transform parent = transform.parent;
+                int count = parent.childCount;
+                for ( int i = 0; i < count; ++i ) {
+                    var part = parent.GetChild( i ).GetComponent<SpritePart>();
+                    if ( part != null ) {
+                        siblings.Add( part );
+                    }
+                }
+
+                // 兄弟の並び替え
+                siblings.Sort( ( l, r ) => l.priority_ - r.priority_ );
+                count = siblings.Count;
+                for ( int i = 0; i < count; ++i ) {
+                    siblings[i].transform.SetSiblingIndex( i );
+                }
+            }
+        }
+
+        /// <summary>
         /// 初期化
         /// </summary>
         /// <param name="root"></param>
-        public void Setup( SpriteRoot root )
+        public void Setup( SpriteRoot root, types.NodeType nodeType )
         {
             root_ = root;
 
             // 4つ頂点生成
-            vertices_ = new List<UIVertex>( new UIVertex[] {
-                UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert
-            } );
+            if ( nodeType == types.NodeType.kNormal ) {
+                vertices_ = new List<UIVertex>( new UIVertex[] {
+                    UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert
+                } );
+            } else {
+                vertices_ = null;
+            }
             position_ = Vector3.zero;
 
             keyFrames_ = new List<List<AttributeBase>>( root_.TotalFrames );
@@ -103,8 +139,9 @@ namespace a.spritestudio
         /// <param name="attribute"></param>
         public void AddKey( int frame, AttributeBase attribute )
         {
-            if ( frame > keyFrames_.Count ) {
+            if ( frame >= keyFrames_.Count ) {
                 // SSの不具合で範囲外のキーフレームが存在するので無視する
+                Debug.LogWarning( "Key frame '" + attribute + "(" + frame + ")' is out of range in " + keyFrames_.Count );
                 return;
             }
             keyFrames_[frame].Add( attribute );
@@ -214,7 +251,9 @@ namespace a.spritestudio
         protected override void OnFillVBO( List<UIVertex> vbo )
         {
             //base.OnFillVBO( vbo );
-            vbo.AddRange( vertices_ );
+            if ( vertices_ != null ) {
+                vbo.AddRange( vertices_ );
+            }
         }
     }
 }
