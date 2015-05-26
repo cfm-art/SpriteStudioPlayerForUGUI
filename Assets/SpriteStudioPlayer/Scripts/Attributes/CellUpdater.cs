@@ -15,12 +15,28 @@ namespace a.spritestudio.attribute
         private int index_;
 
         /// <summary>
+        /// セル内の切り取りのインデックス
+        /// </summary>
+        private int fragment_;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cellIndex"></param>
+        /// <param name="mapIndex"></param>
+        public CellUpdater( int cellIndex, int mapIndex )
+        {
+            index_ = cellIndex;
+            fragment_ = mapIndex;
+        }
+
+        /// <summary>
         /// 処理
         /// </summary>
         /// <param name="part"></param>
         protected override void OnUpdate( SpritePart part )
         {
-            part.CellMap = part.Root.CellMap( index_ );
+            part.SetCellMap( index_, fragment_ );
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace a.spritestudio.editor.attribute
+﻿using a.spritestudio.attribute;
+
+namespace a.spritestudio.editor.attribute
 {
     public class CELL
         : SpriteAttribute
@@ -35,12 +37,25 @@
         /// <summary>
         /// 補間なし
         /// </summary>
-        protected override bool IsInterpolation
+        public override bool IsInterpolation
         {
             get
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 生成
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
+        {
+            Value v = (Value) value;
+            var cell = part.Root.CellMap( v.mapId );
+            return new CellUpdater( v.mapId, cell.FindCell( v.name ) );
         }
     }
 }

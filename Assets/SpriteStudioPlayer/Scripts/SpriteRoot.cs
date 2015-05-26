@@ -50,6 +50,9 @@ namespace a.spritestudio
         [SerializeField]
         private float speed_;
 
+        /// <summary>
+        /// セルマップ
+        /// </summary>
         [SerializeField]
         private List<CellMap> cellMaps_;
 
@@ -79,12 +82,17 @@ namespace a.spritestudio
         }
 
         /// <summary>
-        /// 
+        /// セルマップの設定
         /// </summary>
-        /// <param name="data"></param>
-        void SetData( object data )
+        /// <param name="cellMaps"></param>
+        public void SetupCellMaps( List<CellMap> cellMaps )
         {
-            // TODO: dataをちゃんとする
+            if ( cellMaps_ == null ) {
+                cellMaps_ = new List<CellMap>( cellMaps );
+            } else {
+                cellMaps_.Clear();
+                cellMaps_.AddRange( cellMaps );
+            }
         }
 
         /// <summary>

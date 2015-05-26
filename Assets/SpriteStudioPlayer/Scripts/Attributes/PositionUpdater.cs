@@ -24,6 +24,17 @@ namespace a.spritestudio.attribute
         private float value_;
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="value"></param>
+        public PositionUpdater( int target, float value )
+        {
+            target_ = target;
+            value_ = value;
+        }
+
+        /// <summary>
         /// 処理
         /// </summary>
         /// <param name="part"></param>

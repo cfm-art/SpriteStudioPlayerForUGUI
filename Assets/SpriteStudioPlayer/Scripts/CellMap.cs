@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 namespace a.spritestudio
 {
@@ -18,19 +19,25 @@ namespace a.spritestudio
         /// UV
         /// </summary>
         [SerializeField]
-        private Vector4 uv_;
+        private List<Vector4> uv_;
 
         /// <summary>
         /// 横幅
         /// </summary>
         [SerializeField]
-        private int width_;
+        private List<int> width_;
 
         /// <summary>
         /// 縦幅
         /// </summary>
         [SerializeField]
-        private int height_;
+        private List<int> height_;
+
+        /// <summary>
+        /// セルマップの名前の対応
+        /// </summary>
+        [System.NonSerialized]
+        private Dictionary<string, int> fragmentMap_;
 
         /// <summary>
         /// 生成
@@ -38,7 +45,12 @@ namespace a.spritestudio
         /// <returns></returns>
         public static CellMap Create()
         {
-            return ScriptableObject.CreateInstance<CellMap>();
+            var self = ScriptableObject.CreateInstance<CellMap>();
+            self.uv_ = new List<Vector4>();
+            self.width_ = new List<int>();
+            self.height_ = new List<int>();
+            self.fragmentMap_ = new Dictionary<string, int>();
+            return self;
         }
 
         /// <summary>
@@ -47,30 +59,64 @@ namespace a.spritestudio
         public Texture Texture
         {
             get { return texture_; }
+            set { texture_ = value; }
+        }
+
+        /// <summary>
+        /// セルの追加
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="uv"></param>
+        /// <param name="size"></param>
+        public void AddCell( string name, float[] uv, int[] size )
+        {
+            Vector4 coord = new Vector4( uv[0], uv[1], uv[2], uv[3] );
+            int width = size[0];
+            int height = size[1];
+            int index = uv_.Count;
+
+            uv_.Add( coord );
+            width_.Add( width );
+            height_.Add( height );
+
+            fragmentMap_.Add( name, index );
+        }
+
+        /// <summary>
+        /// セル参照
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public int FindCell( string name )
+        {
+            return fragmentMap_[name];
         }
 
         /// <summary>
         /// UV
         /// </summary>
-        public Vector4 UV
+        /// <param name="index"></param>
+        public Vector4 UV( int index )
         {
-            get { return uv_; }
+            return uv_[index];
         }
 
         /// <summary>
         /// 横幅
         /// </summary>
-        public int Width
+        /// <param name="index"></param>
+        public int Width( int index )
         {
-            get { return width_; }
+            return width_[index];
         }
 
         /// <summary>
         /// 縦幅
         /// </summary>
-        public int Height
+        /// <param name="index"></param>
+        public int Height( int index )
         {
-            get { return height_; }
+            return height_[index];
         }
     }
 }

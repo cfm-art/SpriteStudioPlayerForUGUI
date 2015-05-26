@@ -15,6 +15,15 @@ namespace a.spritestudio.attribute
         private bool isVisible_;
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public VisibilityUpdater( bool isVisible )
+        {
+            isVisible_ = isVisible;
+        }
+
+        /// <summary>
         /// 処理
         /// </summary>
         /// <param name="part"></param>

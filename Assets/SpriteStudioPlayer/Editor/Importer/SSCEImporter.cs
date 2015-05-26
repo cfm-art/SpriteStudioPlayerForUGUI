@@ -52,7 +52,7 @@ namespace a.spritestudio.editor
         {
             public string name;
             public string imagePath;
-            public UnityEngine.WrapMode wrapMode;
+            public UnityEngine.TextureWrapMode wrapMode;
             public UnityEngine.FilterMode filterMode;
             public ReadOnlyCollection<Cell> cellMaps;
 
@@ -106,17 +106,17 @@ namespace a.spritestudio.editor
         /// </summary>
         /// <param name="mode"></param>
         /// <returns></returns>
-        private static UnityEngine.WrapMode convertWrapMode( string mode )
+        private static UnityEngine.TextureWrapMode convertWrapMode( string mode )
         {
             switch ( mode ) {
                 case "clamp":
-                    return UnityEngine.WrapMode.Clamp;
+                    return UnityEngine.TextureWrapMode.Clamp;
                 case "loop":
-                    return UnityEngine.WrapMode.Loop;
+                    return UnityEngine.TextureWrapMode.Repeat;
                 case "once":
-                    return UnityEngine.WrapMode.Once;
+                    return UnityEngine.TextureWrapMode.Repeat;
                 default:
-                    return UnityEngine.WrapMode.Clamp;
+                    return UnityEngine.TextureWrapMode.Clamp;
             }
         }
 

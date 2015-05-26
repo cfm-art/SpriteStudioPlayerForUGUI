@@ -28,7 +28,7 @@
         /// <summary>
         /// 補間なし
         /// </summary>
-        protected override bool IsInterpolation
+        public override bool IsInterpolation
         {
             get
             {

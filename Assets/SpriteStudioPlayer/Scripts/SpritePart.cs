@@ -22,6 +22,7 @@ namespace a.spritestudio
         /// <summary>
         /// 親
         /// </summary>
+        [SerializeField]
         private SpriteRoot root_;
 
         /// <summary>
@@ -32,6 +33,7 @@ namespace a.spritestudio
         /// <summary>
         /// セルマップ
         /// </summary>
+        [SerializeField]
         private CellMap cellMap_;
 
         /// <summary>
@@ -45,8 +47,14 @@ namespace a.spritestudio
         private Vector2 size_;
 
         /// <summary>
+        /// UV
+        /// </summary>
+        private Vector4 uv_;
+
+        /// <summary>
         /// キーフレーム
         /// </summary>
+        [SerializeField]
         private List<List<AttributeBase>> keyFrames_;
 
         /// <summary>
@@ -71,12 +79,9 @@ namespace a.spritestudio
         /// <summary>
         /// 初期化
         /// </summary>
-        /// <param name="name"></param>
         /// <param name="root"></param>
-        /// <param name="partData"></param>
-        public void Setup( SpriteRoot root, string name, object partData )
+        public void Setup( SpriteRoot root )
         {
-            // TODO: partDataをちゃんとする
             root_ = root;
 
             // 4つ頂点生成
@@ -85,20 +90,35 @@ namespace a.spritestudio
             } );
             position_ = Vector3.zero;
 
-            keyFrames_ = new List<List<AttributeBase>>();
+            keyFrames_ = new List<List<AttributeBase>>( root_.TotalFrames );
+            for ( int i = 0; i < root_.TotalFrames; ++i ) {
+                keyFrames_.Add( new List<AttributeBase>() );
+            }
+        }
 
-            // 0フレーム目で初期化
-            SetFrame( 0 );
+        /// <summary>
+        /// キーフレームの追加
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="attribute"></param>
+        public void AddKey( int frame, AttributeBase attribute )
+        {
+            if ( frame > keyFrames_.Count ) {
+                // SSの不具合で範囲外のキーフレームが存在するので無視する
+                return;
+            }
+            keyFrames_[frame].Add( attribute );
         }
 
         /// <summary>
         /// キーフレームの設定
         /// </summary>
         /// <param name="frame"></param>
-        private void SetFrame( int frame )
+        public void SetFrame( int frame )
         {
-            // ここで設定
-            List<AttributeBase> attributes = keyFrames_[0];
+            // TODO: 非キーフレームの取り扱い -> 最初と最後のフレームは全てあるのでそこから何とか？
+            //       もしくは非キーフレームも全て生成しちゃう？
+            List<AttributeBase> attributes = keyFrames_[frame];
 
             foreach ( var attribute in attributes ) {
                 attribute.Update( this );
@@ -111,14 +131,21 @@ namespace a.spritestudio
         public CellMap CellMap
         {
             get { return cellMap_; }
-            set
-            {
-                cellMap_ = value;
-                size_ = new Vector2( cellMap_.Width, cellMap_.Height );
-                position_ = size_ * -0.5f;
-                UpdateVertices();
-                SetMaterialDirty();
-            }
+        }
+
+        /// <summary>
+        /// セルマップの指定
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="mapIndex"></param>
+        public void SetCellMap( int index, int mapIndex )
+        {
+            cellMap_ = root_.CellMap( index );
+            size_ = new Vector2( cellMap_.Width( mapIndex ), cellMap_.Height( mapIndex ) );
+            uv_ = cellMap_.UV( mapIndex );
+            position_ = size_ * -0.5f;
+            UpdateVertices();
+            SetMaterialDirty();
         }
 
         /// <summary>
@@ -149,10 +176,10 @@ namespace a.spritestudio
         /// </summary>
         private void UpdateTextureCoords()
         {
-            UpdateTextureCoord( 0, new Vector2( cellMap_.UV[kS], cellMap_.UV[kT] ) );
-            UpdateTextureCoord( 1, new Vector2( cellMap_.UV[kS], cellMap_.UV[kV] ) );
-            UpdateTextureCoord( 2, new Vector2( cellMap_.UV[kU], cellMap_.UV[kV] ) );
-            UpdateTextureCoord( 3, new Vector2( cellMap_.UV[kU], cellMap_.UV[kT] ) );
+            UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] ) );
+            UpdateTextureCoord( 1, new Vector2( uv_[kS], uv_[kV] ) );
+            UpdateTextureCoord( 2, new Vector2( uv_[kU], uv_[kV] ) );
+            UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] ) );
             SetVerticesDirty();
         }
 
