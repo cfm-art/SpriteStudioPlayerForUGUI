@@ -9,16 +9,9 @@ namespace a.spritestudio
     /// <summary>
     /// パーツ
     /// </summary>
-    [RequireComponent( typeof(RectTransform) )]
-    [RequireComponent( typeof(CanvasRenderer) )]
     public class SpritePart
-        : Graphic
+        : MonoBehaviour
     {
-        private const int kS = 0;
-        private const int kT = 1;
-        private const int kU = 2;
-        private const int kV = 3;
-
         /// <summary>
         /// 親
         /// </summary>
@@ -26,41 +19,39 @@ namespace a.spritestudio
         private SpriteRoot root_;
 
         /// <summary>
-        /// 頂点情報
-        /// </summary>
-        private List<UIVertex> vertices_;
-
-        /// <summary>
-        /// セルマップ
-        /// </summary>
-        [SerializeField]
-        private CellMap cellMap_;
-
-        /// <summary>
-        /// 位置
-        /// </summary>
-        private Vector3 position_;
-
-        /// <summary>
-        /// 大きさ
-        /// </summary>
-        private Vector2 size_;
-
-        /// <summary>
-        /// UV
-        /// </summary>
-        private Vector4 uv_;
-
-        /// <summary>
         /// キーフレーム
         /// </summary>
         [SerializeField]
-        private List<List<AttributeBase>> keyFrames_;
+        private List<KeyFrame> keyFrames_;
 
         /// <summary>
         /// 優先度
         /// </summary>
+        [SerializeField]
         private int priority_;
+
+        /// <summary>
+        /// NULLかどうか
+        /// </summary>
+        [SerializeField]
+        [HideInInspector]
+        private bool isNull_;
+
+        /// <summary>
+        /// 描画
+        /// </summary>
+        [SerializeField]
+        [HideInInspector]
+        private SpritePartRenderer renderer_;
+
+        /// <summary>
+        /// GOの初期化時
+        /// </summary>
+        void Start()
+        {
+            SetupVertices();
+            SetFrame( 0 );
+        }
 
         /// <summary>
         /// 親の取得
@@ -71,14 +62,11 @@ namespace a.spritestudio
         }
 
         /// <summary>
-        /// テクスチャの指定
+        /// レンダラ
         /// </summary>
-        public override Texture mainTexture
+        public SpritePartRenderer Renderer
         {
-            get
-            {
-                return cellMap_ != null ? cellMap_.Texture : base.mainTexture;
-            }
+            get { return renderer_; }
         }
 
         /// <summary>
@@ -116,19 +104,27 @@ namespace a.spritestudio
         {
             root_ = root;
 
-            // 4つ頂点生成
-            if ( nodeType == types.NodeType.kNormal ) {
-                vertices_ = new List<UIVertex>( new UIVertex[] {
-                    UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert
-                } );
-            } else {
-                vertices_ = null;
+            isNull_ = nodeType != types.NodeType.kNormal;
+            if ( !isNull_ ) {
+                // NULLノードでなければレンダラ生成
+                renderer_ = gameObject.AddComponent<SpritePartRenderer>();
+                renderer_.Setup( this );
+                SetupVertices();
             }
-            position_ = Vector3.zero;
 
-            keyFrames_ = new List<List<AttributeBase>>( root_.TotalFrames );
+            keyFrames_ = new List<KeyFrame>( root_.TotalFrames );
             for ( int i = 0; i < root_.TotalFrames; ++i ) {
-                keyFrames_.Add( new List<AttributeBase>() );
+                keyFrames_.Add( new KeyFrame() );
+            }
+        }
+
+        /// <summary>
+        /// 頂点バッファ生成
+        /// </summary>
+        private void SetupVertices()
+        {
+            if ( renderer_ != null ) {
+                renderer_.SetupVertices();
             }
         }
 
@@ -155,19 +151,11 @@ namespace a.spritestudio
         {
             // TODO: 非キーフレームの取り扱い -> 最初と最後のフレームは全てあるのでそこから何とか？
             //       もしくは非キーフレームも全て生成しちゃう？
-            List<AttributeBase> attributes = keyFrames_[frame];
+            KeyFrame attributes = keyFrames_[frame];
 
             foreach ( var attribute in attributes ) {
                 attribute.Update( this );
             }
-        }
-
-        /// <summary>
-        /// セルマップの取得・更新
-        /// </summary>
-        public CellMap CellMap
-        {
-            get { return cellMap_; }
         }
 
         /// <summary>
@@ -177,82 +165,8 @@ namespace a.spritestudio
         /// <param name="mapIndex"></param>
         public void SetCellMap( int index, int mapIndex )
         {
-            cellMap_ = root_.CellMap( index );
-            size_ = new Vector2( cellMap_.Width( mapIndex ), cellMap_.Height( mapIndex ) );
-            uv_ = cellMap_.UV( mapIndex );
-            position_ = size_ * -0.5f;
-            UpdateVertices();
-            SetMaterialDirty();
-        }
-
-        /// <summary>
-        /// 頂点情報の更新
-        /// </summary>
-        private void UpdateVertices()
-        {
-            // 座標
-            UpdatePositions();
-            // UV
-            UpdateTextureCoords();
-        }
-
-        /// <summary>
-        /// 頂点座標の一括更新
-        /// </summary>
-        private void UpdatePositions()
-        {
-            UpdatePosition( 0, position_ );
-            UpdatePosition( 1, Utility.AppendY( position_, size_ ) );
-            UpdatePosition( 2, Utility.AppendXY( position_, size_ ) );
-            UpdatePosition( 3, Utility.AppendX( position_, size_ ) );
-            SetVerticesDirty();
-        }
-
-        /// <summary>
-        /// UVの一括更新
-        /// </summary>
-        private void UpdateTextureCoords()
-        {
-            UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] ) );
-            UpdateTextureCoord( 1, new Vector2( uv_[kS], uv_[kV] ) );
-            UpdateTextureCoord( 2, new Vector2( uv_[kU], uv_[kV] ) );
-            UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] ) );
-            SetVerticesDirty();
-        }
-
-        /// <summary>
-        /// 頂点座標の更新
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="position"></param>
-        private void UpdatePosition( int index, Vector3 position )
-        {
-            var vertex = vertices_[index];
-            vertex.position = position_;
-            vertices_[index] = vertex;
-        }
-
-        /// <summary>
-        /// UVの更新
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="uv"></param>
-        private void UpdateTextureCoord( int index, Vector2 uv )
-        {
-            var vertex = vertices_[index];
-            vertex.uv0 = uv;
-            vertices_[index] = vertex;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="vbo"></param>
-        protected override void OnFillVBO( List<UIVertex> vbo )
-        {
-            //base.OnFillVBO( vbo );
-            if ( vertices_ != null ) {
-                vbo.AddRange( vertices_ );
+            if ( renderer_ != null ) {
+                renderer_.SetCellMap( index, mapIndex );
             }
         }
     }

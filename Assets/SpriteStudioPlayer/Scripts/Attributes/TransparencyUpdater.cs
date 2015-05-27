@@ -29,7 +29,7 @@ namespace a.spritestudio.attribute
         /// <param name="part"></param>
         protected override void OnUpdate( SpritePart part )
         {
-            part.canvasRenderer.SetAlpha( value_ );
+            part.Renderer.canvasRenderer.SetAlpha( value_ );
         }
     }
 }

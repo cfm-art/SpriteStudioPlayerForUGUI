@@ -44,14 +44,14 @@ namespace a.spritestudio.editor
 
             // sspjのインポート
             var projectInformation = new SSPJImporter().Import( file );
-            Debug.Log( projectInformation.ToString() );
+            Tracer.Log( projectInformation.ToString() );
 
             // ssceのインポート
             List<CellMap> cellMap = new List<CellMap>();
             foreach ( var cell in projectInformation.cellMaps ) {
                 var importer = new SSCEImporter();
                 var ssceInformation = importer.Import( path + '\\' + cell );
-                Debug.Log( ssceInformation.ToString() );
+                Tracer.Log( ssceInformation.ToString() );
 
                 // エンジン側の形式へ変更
                 var converter = new SSCEConverter();
@@ -65,7 +65,7 @@ namespace a.spritestudio.editor
                 AssetDatabase.CreateAsset( cell, fileName );
                 cellMap[i] = (CellMap) AssetDatabase.LoadAssetAtPath( fileName, typeof( CellMap ) );
 
-                Debug.Log( "Save CellMap:" + fileName );
+                Tracer.Log( "Save CellMap:" + fileName );
             }
 
             // ssaeのインポート
@@ -73,7 +73,7 @@ namespace a.spritestudio.editor
             try {
                 foreach ( var animation in projectInformation.animePacks ) {
                     var ssaeInformation = new SSAEImporter().Import( path + '\\' + animation );
-                    Debug.Log( ssaeInformation.ToString() );
+                    Tracer.Log( ssaeInformation.ToString() );
 
                     var converter = new SSAEConverter();
                     prefabs = converter.Convert( projectInformation, ssaeInformation, cellMap );
@@ -81,11 +81,13 @@ namespace a.spritestudio.editor
 
                 if ( prefabs != null ) {
                     // prefab保存
+                    string basePath = exportPath + "Sprites/" + Path.GetFileNameWithoutExtension( file );
+                    CreateFolders( basePath );
                     foreach ( var prefab in prefabs ) {
-                        string fileName = exportPath + "Sprites/" + prefab.name + ".prefab";
+                        string fileName = basePath + "/" + prefab.name + ".prefab";
                         PrefabUtility.CreatePrefab( fileName, prefab );
 
-                        Debug.Log( "Save Prefab:" + fileName );
+                        Tracer.Log( "Save Prefab:" + fileName );
                     }
                 }
             } finally {
@@ -95,7 +97,17 @@ namespace a.spritestudio.editor
                         GameObject.DestroyImmediate( p );
                     }
                 }
+                AssetDatabase.SaveAssets();
             }
+        }
+
+        /// <summary>
+        /// フォルダ生成
+        /// </summary>
+        /// <param name="path"></param>
+        public static void CreateFolders( string path )
+        {
+            Directory.CreateDirectory( path );
         }
     }
 }

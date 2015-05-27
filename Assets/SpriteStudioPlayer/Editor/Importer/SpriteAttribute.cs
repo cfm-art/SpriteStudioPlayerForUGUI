@@ -44,7 +44,7 @@ namespace a.spritestudio.editor
                 try {
                     values_.Add( key, CraeteValue( node, value ) );
                 } catch {
-                    UnityEngine.Debug.Log( "error occurs:" + GetType().Name + "\n" + root.Raw.InnerXml );
+                    Tracer.Log( "error occurs:" + GetType().Name + "\n" + root.Raw.InnerXml );
                     throw;
                 }
             }

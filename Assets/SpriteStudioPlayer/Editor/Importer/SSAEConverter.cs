@@ -23,7 +23,7 @@ namespace a.spritestudio.editor
                     if ( found == null ) {
                         throw new System.ArgumentException( "Cell '" + cell + "' dose not find." );
                     }
-                    Debug.Log( found );
+                    Tracer.Log( found );
                     requiredCellMap.Add( found );
                 }
 
