@@ -9,6 +9,8 @@ namespace a.spritestudio
     /// <summary>
     /// パーツ
     /// </summary>
+    [DisallowMultipleComponent]
+    [RequireComponent( typeof(RectTransform) )]
     public class SpritePart
         : MonoBehaviour
     {
@@ -25,12 +27,6 @@ namespace a.spritestudio
         private List<KeyFrame> keyFrames_;
 
         /// <summary>
-        /// 優先度
-        /// </summary>
-        [SerializeField]
-        private int priority_;
-
-        /// <summary>
         /// NULLかどうか
         /// </summary>
         [SerializeField]
@@ -43,6 +39,11 @@ namespace a.spritestudio
         [SerializeField]
         [HideInInspector]
         private SpritePartRenderer renderer_;
+
+        /// <summary>
+        /// 前のフレーム
+        /// </summary>
+        private int oldFrame_;
 
         /// <summary>
         /// GOの初期化時
@@ -74,25 +75,19 @@ namespace a.spritestudio
         /// </summary>
         public int Priority
         {
-            get { return priority_; }
-            set {
-                priority_ = value;
-                List<SpritePart> siblings = new List<SpritePart>();
-                Transform parent = transform.parent;
-                int count = parent.childCount;
-                for ( int i = 0; i < count; ++i ) {
-                    var part = parent.GetChild( i ).GetComponent<SpritePart>();
-                    if ( part != null ) {
-                        siblings.Add( part );
-                    }
-                }
+            get { return renderer_.Priority; }
+            set { renderer_.Priority = value; }
+        }
 
-                // 兄弟の並び替え
-                siblings.Sort( ( l, r ) => l.priority_ - r.priority_ );
-                count = siblings.Count;
-                for ( int i = 0; i < count; ++i ) {
-                    siblings[i].transform.SetSiblingIndex( i );
-                }
+        /// <summary>
+        /// 更新
+        /// </summary>
+        void Update()
+        {
+            int frame = root_.CurrentFrame;
+            if ( oldFrame_ != frame ) {
+                SetFrame( frame );
+
             }
         }
 
@@ -107,7 +102,9 @@ namespace a.spritestudio
             isNull_ = nodeType != types.NodeType.kNormal;
             if ( !isNull_ ) {
                 // NULLノードでなければレンダラ生成
-                renderer_ = gameObject.AddComponent<SpritePartRenderer>();
+                var r = new GameObject( name, typeof( SpritePartRenderer ) );
+                renderer_ = r.GetComponent<SpritePartRenderer>();
+                root.AddSprite( renderer_ );
                 renderer_.Setup( this );
                 SetupVertices();
             }
@@ -156,6 +153,10 @@ namespace a.spritestudio
             foreach ( var attribute in attributes ) {
                 attribute.Update( this );
             }
+
+            oldFrame_ = frame;
+
+            UpdateTransform();
         }
 
         /// <summary>
@@ -168,6 +169,25 @@ namespace a.spritestudio
             if ( renderer_ != null ) {
                 renderer_.SetCellMap( index, mapIndex );
             }
+        }
+
+        /// <summary>
+        /// Transformの更新
+        /// </summary>
+        private void UpdateTransform()
+        {
+            if ( renderer_ == null ) {return;}
+            CopyTransform( GetComponent<RectTransform>(), renderer_.rectTransform );
+        }
+
+        /// <summary>
+        /// Transformをコピー
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        private static void CopyTransform( RectTransform from, RectTransform to )
+        {
+            to.position = from.position;
         }
     }
 }

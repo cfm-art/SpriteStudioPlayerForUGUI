@@ -69,22 +69,22 @@ namespace a.spritestudio.editor
             }
 
             // ssaeのインポート
-            List<GameObject> prefabs = null;
+            List<GameObject> prefabs = new List<GameObject>();
             try {
+                string basePath = exportPath + "Sprites/" + Path.GetFileNameWithoutExtension( file );
                 foreach ( var animation in projectInformation.animePacks ) {
                     var ssaeInformation = new SSAEImporter().Import( path + '\\' + animation );
                     Tracer.Log( ssaeInformation.ToString() );
 
                     var converter = new SSAEConverter();
-                    prefabs = converter.Convert( projectInformation, ssaeInformation, cellMap );
-                }
+                    var data = converter.Convert( projectInformation, ssaeInformation, cellMap );
+                    prefabs.AddRange( data );
 
-                if ( prefabs != null ) {
                     // prefab保存
-                    string basePath = exportPath + "Sprites/" + Path.GetFileNameWithoutExtension( file );
-                    CreateFolders( basePath );
-                    foreach ( var prefab in prefabs ) {
-                        string fileName = basePath + "/" + prefab.name + ".prefab";
+                    string name = Path.GetFileNameWithoutExtension( animation );
+                    CreateFolders( basePath + "/" + name );
+                    foreach ( var prefab in data ) {
+                        string fileName = basePath + "/" + name + "/" + prefab.name + ".prefab";
                         PrefabUtility.CreatePrefab( fileName, prefab );
 
                         Tracer.Log( "Save Prefab:" + fileName );

@@ -33,6 +33,7 @@ namespace a.spritestudio.editor
                     results.Add( o );
 
                     var root = o.GetComponent<SpriteRoot>();
+                    root.SetupSpriteHolder();
                     root.SetupCellMaps( requiredCellMap );
 
                     SortedDictionary<int, GameObject> partsObjects = new SortedDictionary<int, GameObject>();

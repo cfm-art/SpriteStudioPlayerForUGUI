@@ -7,6 +7,7 @@ namespace a.spritestudio
     /// ルート
     /// </summary>
     [DisallowMultipleComponent]
+    [ExecuteInEditMode]
     public class SpriteRoot
         : MonoBehaviour
     {
@@ -65,9 +66,26 @@ namespace a.spritestudio
         private bool isUseDeltaTime_;
 
         /// <summary>
+        /// Spriteを保持する場所
+        /// </summary>
+        [SerializeField]
+        private GameObject spriteHolder_;
+
+        /// <summary>
         /// パーツ
         /// </summary>
         private Dictionary<string, SpritePart> parts_;
+
+        /// <summary>
+        /// 優先度の更新
+        /// </summary>
+        private bool requireUpdatePriority_;
+
+        /// <summary>
+        /// レンダラー一覧
+        /// </summary>
+        [SerializeField]
+        private List<SpritePartRenderer> renderers_;
 
         /// <summary>
         /// 開始
@@ -80,6 +98,35 @@ namespace a.spritestudio
                 speed_ = 1f;
             }
             parts_ = new Dictionary<string, SpritePart>();
+            UpdatePriority();
+        }
+
+        /// <summary>
+        /// Spriteを保持する場所を設定
+        /// </summary>
+        public void SetupSpriteHolder()
+        {
+            renderers_ = new List<SpritePartRenderer>();
+            spriteHolder_ = new GameObject( "sprites", typeof( RectTransform ) );
+            spriteHolder_.transform.SetParent( transform );
+        }
+
+        /// <summary>
+        /// Spriteを保持する場所
+        /// </summary>
+        public Transform SpriteHolder
+        {
+            get { return spriteHolder_.transform; }
+        }
+
+        /// <summary>
+        /// レンダラ追加
+        /// </summary>
+        /// <param name="renderer"></param>
+        public void AddSprite( SpritePartRenderer renderer )
+        {
+            renderer.transform.SetParent( SpriteHolder );
+            renderers_.Add( renderer );
         }
 
         /// <summary>
@@ -97,12 +144,23 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// 優先度の更新
+        /// </summary>
+        public void UpdatePriority()
+        {
+            requireUpdatePriority_ = true;
+        }
+
+        /// <summary>
         /// 破棄
         /// </summary>
         void OnDestroy()
         {
             if ( parts_ != null ) {
                 parts_.Clear();
+            }
+            if ( renderers_ != null ) {
+                renderers_.Clear();
             }
         }
 
@@ -111,6 +169,7 @@ namespace a.spritestudio
         /// </summary>
         void Update()
         {
+            if ( !Application.isPlaying ) { return; }
             // フレーム制御
             if ( totalFrames_ <= 0 ) { totalFrames_ = 1; }
             if ( isReverse_ ) {
@@ -142,6 +201,23 @@ namespace a.spritestudio
             }
             // intへの変換コストの為に事前にintへ
             currentFrame_ = (int) frame_;
+        }
+
+        /// <summary>
+        /// 遅延更新
+        /// </summary>
+        void LateUpdate()
+        {
+            // 優先度更新
+            if ( requireUpdatePriority_ ) {
+                renderers_.Sort( ( l, r ) => l.Priority - r.Priority );
+
+                int count = renderers_.Count;
+                for ( int i = 0; i < count; ++i ) {
+                    renderers_[i].transform.SetSiblingIndex( i );
+                }
+            }
+            requireUpdatePriority_ = false;
         }
 
         /// <summary>

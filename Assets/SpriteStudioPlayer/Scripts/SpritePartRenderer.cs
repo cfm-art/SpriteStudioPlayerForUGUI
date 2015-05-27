@@ -53,6 +53,22 @@ namespace a.spritestudio
         private CellMap cellMap_;
 
         /// <summary>
+        /// 優先度
+        /// </summary>
+        [SerializeField]
+        private int priority_;
+
+        public int Priority
+        {
+            get { return priority_; }
+            set
+            {
+                priority_ = value;
+                part_.Root.UpdatePriority();
+            }
+        }
+
+        /// <summary>
         /// パーツの設定
         /// </summary>
         /// <param name="part"></param>

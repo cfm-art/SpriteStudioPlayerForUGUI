@@ -31,10 +31,10 @@ namespace a.spritestudio.editor
                 rotated = node.AtBoolean( "rotated" );
 
                 float s = pos[0] / (float) textureWidth;
-                float t = 1f - pos[1] / (float) textureHeight;
+                float t = 1f - (pos[1] / (float) textureHeight);
                 float u = s + (size[0] / (float) textureWidth);
                 float v = t - (size[1] / (float) textureHeight);
-                uv = new float[4] { s, t - v, u, v };
+                uv = new float[4] { s, v, u, t };
             }
 
             public override string ToString()
