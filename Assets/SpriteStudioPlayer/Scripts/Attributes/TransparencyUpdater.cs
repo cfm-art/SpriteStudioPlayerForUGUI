@@ -7,22 +7,14 @@ namespace a.spritestudio.attribute
     /// 不透明度の変更
     /// </summary>
     public class TransparencyUpdater
-        : AttributeBase
     {
-        /// <summary>
-        /// 値
-        /// </summary>
-        [SerializeField]
-        private float value_;
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="value"></param>
-        public static TransparencyUpdater Create( float value )
+        public static AttributeBase Create( float value )
         {
-            var self = ScriptableObject.CreateInstance<TransparencyUpdater>();
-            self.value_ = value;
+            var self = new AttributeBase( AttributeBase.Target.kTransparency, null, new float[] { value }, null );
             return self;
         }
 
@@ -30,9 +22,9 @@ namespace a.spritestudio.attribute
         /// 処理
         /// </summary>
         /// <param name="part"></param>
-        protected override void OnUpdate( SpritePart part )
+        public static void OnUpdate( SpritePart part, AttributeBase attribute )
         {
-            part.Renderer.canvasRenderer.SetAlpha( value_ );
+            part.Renderer.canvasRenderer.SetAlpha( attribute.@float( 0 ) );
         }
     }
 }

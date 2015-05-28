@@ -15,9 +15,6 @@ namespace a.spritestudio
         [SerializeField]
         private List<attribute.AttributeBase> attributes_;
 
-        [SerializeField]
-        private List<int> a;
-
         /// <summary>
         /// 
         /// </summary>
@@ -30,7 +27,6 @@ namespace a.spritestudio
         {
             KeyFrame self = new KeyFrame();
             self.attributes_ = new List<attribute.AttributeBase>();
-            self.a = new List<int>();
             return self;
         }
 

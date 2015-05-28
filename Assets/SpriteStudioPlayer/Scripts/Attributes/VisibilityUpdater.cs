@@ -7,22 +7,14 @@ namespace a.spritestudio.attribute
     /// 可視状態の更新
     /// </summary>
     public class VisibilityUpdater
-        : AttributeBase
     {
-        /// <summary>
-        /// 可視
-        /// </summary>
-        [SerializeField]
-        private bool isVisible_;
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="isVisible"></param>
-        public static VisibilityUpdater Create( bool isVisible )
+        public static AttributeBase Create( bool isVisible )
         {
-            var self = ScriptableObject.CreateInstance<VisibilityUpdater>();
-            self.isVisible_ = isVisible;
+            var self = new AttributeBase( AttributeBase.Target.kVisibility, null, null, new bool[] { isVisible } );
             return self;
         }
 
@@ -30,9 +22,9 @@ namespace a.spritestudio.attribute
         /// 処理
         /// </summary>
         /// <param name="part"></param>
-        protected override void OnUpdate( SpritePart part )
+        public static void OnUpdate( SpritePart part, AttributeBase attribute )
         {
-            part.gameObject.SetActive( isVisible_ );
+            part.gameObject.SetActive( attribute.@bool( 0 ) );
         }
     }
 }

@@ -7,22 +7,14 @@ namespace a.spritestudio.attribute
     /// 優先度の設定
     /// </summary>
     public class PriorityUpdater
-        : AttributeBase
     {
-        /// <summary>
-        /// 値
-        /// </summary>
-        [SerializeField]
-        private int value_;
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="value"></param>
-        public static PriorityUpdater Create( int value )
+        public static AttributeBase Create( int value )
         {
-            var self = ScriptableObject.CreateInstance<PriorityUpdater>();
-            self.value_ = value;
+            var self = new AttributeBase( AttributeBase.Target.kPriority, new int[] { value }, null, null );
             return self;
         }
 
@@ -30,9 +22,9 @@ namespace a.spritestudio.attribute
         /// 処理
         /// </summary>
         /// <param name="part"></param>
-        protected override void OnUpdate( SpritePart part )
+        public static void OnUpdate( SpritePart part, AttributeBase attribute )
         {
-            part.Priority = value_;
+            part.Priority = attribute.@int( 0 );
         }
     }
 }
