@@ -6,14 +6,18 @@ namespace a.spritestudio.attribute
     /// <summary>
     /// キーフレームの基本
     /// </summary>
-    [System.Serializable]
     public abstract class AttributeBase
+        : ScriptableObject
     {
+        protected AttributeBase()
+        {
+        }
+
         /// <summary>
         /// 更新処理
         /// </summary>
         /// <param name="part"></param>
-        public void Update( SpritePart part )
+        public void Do( SpritePart part )
         {
             OnUpdate( part );
         }

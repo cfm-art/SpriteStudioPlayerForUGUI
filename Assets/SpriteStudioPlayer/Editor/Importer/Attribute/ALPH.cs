@@ -8,7 +8,7 @@ namespace a.spritestudio.editor.attribute
         public override AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
         {
             Value v = (Value) value;
-            return new TransparencyUpdater( v.value );
+            return TransparencyUpdater.Create( v.value );
         }
     }
 }

@@ -12,16 +12,18 @@ namespace a.spritestudio.attribute
         /// <summary>
         /// 値
         /// </summary>
+        [SerializeField]
         private int value_;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="target"></param>
         /// <param name="value"></param>
-        public PriorityUpdater( int value )
+        public static PriorityUpdater Create( int value )
         {
-            value_ = value;
+            var self = ScriptableObject.CreateInstance<PriorityUpdater>();
+            self.value_ = value;
+            return self;
         }
 
         /// <summary>

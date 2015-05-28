@@ -8,7 +8,7 @@ namespace a.spritestudio.editor.attribute
         public override AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
         {
             Value v = (Value) value;
-            return new ScalingUpdater( ScalingUpdater.kTargetY, v.value );
+            return ScalingUpdater.Create( ScalingUpdater.kTargetY, v.value );
         }
     }
 }

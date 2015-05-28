@@ -10,7 +10,12 @@ namespace a.spritestudio.editor
     /// </summary>
     public class SSAEConverter
     {
-        public List<GameObject> Convert( SSPJImporter.Information projectInformation, SSAEImporter.Information animationData, List<CellMap> cellMaps )
+        public class Result
+        {
+            public List<GameObject> animations;
+        }
+
+        public Result Convert( SSPJImporter.Information projectInformation, SSAEImporter.Information animationData, List<CellMap> cellMaps )
         {
             List<GameObject> results = new List<GameObject>( animationData.animations.Count );
 
@@ -70,7 +75,9 @@ namespace a.spritestudio.editor
                     }
                 }
 
-                return results;
+                return new Result() {
+                    animations = results,
+                };
             } catch {
                 // ヒエラルキーにGOが残らないようにする
                 foreach ( var o in results ) {

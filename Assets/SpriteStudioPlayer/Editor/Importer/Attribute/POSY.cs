@@ -14,7 +14,7 @@ namespace a.spritestudio.editor.attribute
         public override AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
         {
             Value v = (Value) value;
-            return new PositionUpdater( PositionUpdater.kTargetY, v.value );
+            return PositionUpdater.Create( PositionUpdater.kTargetY, v.value );
         }
     }
 }

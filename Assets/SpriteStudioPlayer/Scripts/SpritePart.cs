@@ -25,7 +25,7 @@ namespace a.spritestudio
         /// キーフレーム
         /// </summary>
         [SerializeField]
-        private List<KeyFrame> keyFrames_;
+        private KeyFrame[] keyFrames_;
 
         /// <summary>
         /// NULLかどうか
@@ -114,9 +114,9 @@ namespace a.spritestudio
                 SetupVertices();
             }
 
-            keyFrames_ = new List<KeyFrame>( root_.TotalFrames );
+            keyFrames_ = new KeyFrame[root_.TotalFrames];
             for ( int i = 0; i < root_.TotalFrames; ++i ) {
-                keyFrames_.Add( new KeyFrame() );
+                keyFrames_[i] = KeyFrame.Create();
             }
         }
 
@@ -137,9 +137,9 @@ namespace a.spritestudio
         /// <param name="attribute"></param>
         public void AddKey( int frame, AttributeBase attribute )
         {
-            if ( frame >= keyFrames_.Count ) {
+            if ( frame >= keyFrames_.Length ) {
                 // SSの不具合で範囲外のキーフレームが存在するので無視する
-                Debug.LogWarning( "Key frame '" + attribute + "(" + frame + ")' is out of range in " + keyFrames_.Count );
+                Debug.LogWarning( "Key frame '" + attribute + "(" + frame + ")' is out of range in " + keyFrames_.Length );
                 return;
             }
             keyFrames_[frame].Add( attribute );
@@ -157,10 +157,10 @@ namespace a.spritestudio
                 KeyFrame attributes = keyFrames_[frame];
 
                 foreach ( var attribute in attributes ) {
-                    attribute.Update( this );
+                    attribute.Do( this );
                 }
             } catch {
-                Debug.LogError( "out of range:" + keyFrames_.Count + "/" + frame );
+                Debug.LogError( "out of range:" + keyFrames_.Length + "/" + frame );
                 throw;
             }
 

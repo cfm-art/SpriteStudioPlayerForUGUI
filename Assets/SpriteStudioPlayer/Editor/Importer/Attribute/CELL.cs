@@ -55,7 +55,7 @@ namespace a.spritestudio.editor.attribute
         {
             Value v = (Value) value;
             var cell = part.Root.CellMap( v.mapId );
-            return new CellUpdater( v.mapId, cell.FindCell( v.name ) );
+            return CellUpdater.Create( v.mapId, cell.FindCell( v.name ) );
         }
     }
 }

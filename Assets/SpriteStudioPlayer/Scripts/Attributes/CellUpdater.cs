@@ -12,11 +12,13 @@ namespace a.spritestudio.attribute
         /// <summary>
         /// セルのインデックス
         /// </summary>
+        [SerializeField]
         private int index_;
 
         /// <summary>
         /// セル内の切り取りのインデックス
         /// </summary>
+        [SerializeField]
         private int fragment_;
 
         /// <summary>
@@ -24,10 +26,12 @@ namespace a.spritestudio.attribute
         /// </summary>
         /// <param name="cellIndex"></param>
         /// <param name="mapIndex"></param>
-        public CellUpdater( int cellIndex, int mapIndex )
+        public static CellUpdater Create( int cellIndex, int mapIndex )
         {
-            index_ = cellIndex;
-            fragment_ = mapIndex;
+            var self = ScriptableObject.CreateInstance<CellUpdater>();
+            self.index_ = cellIndex;
+            self.fragment_ = mapIndex;
+            return self;
         }
 
         /// <summary>

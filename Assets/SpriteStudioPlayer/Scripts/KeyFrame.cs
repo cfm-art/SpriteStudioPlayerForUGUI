@@ -12,14 +12,26 @@ namespace a.spritestudio
         /// <summary>
         /// 
         /// </summary>
+        [SerializeField]
         private List<attribute.AttributeBase> attributes_;
+
+        [SerializeField]
+        private List<int> a;
 
         /// <summary>
         /// 
         /// </summary>
-        public KeyFrame()
+        private KeyFrame() { }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static KeyFrame Create()
         {
-            attributes_ = new List<attribute.AttributeBase>();
+            KeyFrame self = new KeyFrame();
+            self.attributes_ = new List<attribute.AttributeBase>();
+            self.a = new List<int>();
+            return self;
         }
 
         /// <summary>

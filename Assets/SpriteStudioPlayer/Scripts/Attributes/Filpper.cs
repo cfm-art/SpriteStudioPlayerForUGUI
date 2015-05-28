@@ -12,21 +12,25 @@ namespace a.spritestudio.attribute
         /// <summary>
         /// 縦か横か
         /// </summary>
+        [SerializeField]
         private bool isHorizontal_;
 
         /// <summary>
         /// 反転
         /// </summary>
+        [SerializeField]
         private bool isFlip_;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="isVisible"></param>
-        public Flipper( bool isFlip, bool isHorizontal )
+        public static Flipper Create( bool isFlip, bool isHorizontal )
         {
-            isFlip_ = isFlip;
-            isHorizontal_ = isHorizontal;
+            var self = ScriptableObject.CreateInstance<Flipper>();
+            self.isFlip_ = isFlip;
+            self.isHorizontal_ = isHorizontal;
+            return self;
         }
 
         /// <summary>

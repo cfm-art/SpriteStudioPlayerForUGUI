@@ -12,15 +12,18 @@ namespace a.spritestudio.attribute
         /// <summary>
         /// 可視
         /// </summary>
+        [SerializeField]
         private bool isVisible_;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="isVisible"></param>
-        public VisibilityUpdater( bool isVisible )
+        public static VisibilityUpdater Create( bool isVisible )
         {
-            isVisible_ = isVisible;
+            var self = ScriptableObject.CreateInstance<VisibilityUpdater>();
+            self.isVisible_ = isVisible;
+            return self;
         }
 
         /// <summary>

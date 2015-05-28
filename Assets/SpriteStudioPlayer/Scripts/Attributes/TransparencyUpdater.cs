@@ -12,15 +12,18 @@ namespace a.spritestudio.attribute
         /// <summary>
         /// 値
         /// </summary>
+        [SerializeField]
         private float value_;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="value"></param>
-        public TransparencyUpdater( float value )
+        public static TransparencyUpdater Create( float value )
         {
-            value_ = value;
+            var self = ScriptableObject.CreateInstance<TransparencyUpdater>();
+            self.value_ = value;
+            return self;
         }
 
         /// <summary>

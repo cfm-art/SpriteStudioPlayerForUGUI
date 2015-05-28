@@ -8,7 +8,7 @@ namespace a.spritestudio.editor.attribute
         public override AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
         {
             Value v = (Value) value;
-            return new RotationUpdater( RotationUpdater.kTargetZ, v.value );
+            return RotationUpdater.Create( RotationUpdater.kTargetZ, v.value );
         }
     }
 }

@@ -15,11 +15,13 @@ namespace a.spritestudio.attribute
         /// <summary>
         /// 対象
         /// </summary>
+        [SerializeField]
         private int target_;
 
         /// <summary>
         /// 値
         /// </summary>
+        [SerializeField]
         private float value_;
 
         /// <summary>
@@ -27,10 +29,12 @@ namespace a.spritestudio.attribute
         /// </summary>
         /// <param name="target"></param>
         /// <param name="value"></param>
-        public ScalingUpdater( int target, float value )
+        public static ScalingUpdater Create( int target, float value )
         {
-            target_ = target;
-            value_ = value;
+            var self = ScriptableObject.CreateInstance<ScalingUpdater>();
+            self.target_ = target;
+            self.value_ = value;
+            return self;
         }
 
         /// <summary>

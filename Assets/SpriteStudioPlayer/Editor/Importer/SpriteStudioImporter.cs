@@ -81,13 +81,13 @@ namespace a.spritestudio.editor
                     Tracer.Log( ssaeInformation.ToString() );
 
                     var converter = new SSAEConverter();
-                    var data = converter.Convert( projectInformation, ssaeInformation, cellMap );
-                    prefabs.AddRange( data );
+                    var result = converter.Convert( projectInformation, ssaeInformation, cellMap );
+                    prefabs.AddRange( result.animations );
 
                     // prefab保存
                     string name = Path.GetFileNameWithoutExtension( animation );
                     CreateFolders( basePath + "/" + name );
-                    foreach ( var prefab in data ) {
+                    foreach ( var prefab in result.animations ) {
                         string fileName = basePath + "/" + name + "/" + prefab.name + ".prefab";
                         PrefabUtility.CreatePrefab( fileName, prefab );
 
