@@ -63,6 +63,7 @@ namespace a.spritestudio.editor
             }
             
             // セルマップの保存
+            CreateFolders( exportPath + "CellMaps" );
             for ( int i = 0; i < cellMap.Count; ++i ) {
                 var cell = cellMap[i];
                 string fileName = exportPath + "CellMaps/" + cell.name + ".asset";

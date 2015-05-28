@@ -15,6 +15,16 @@
             {
                 return on.ToString();
             }
+
+            /// <summary>
+            /// 同一設定かどうか
+            /// </summary>
+            /// <param name="v"></param>
+            /// <returns></returns>
+            public override bool IsSameValue( ValueBase v )
+            {
+                return on == ((Value) v).on;
+            }
         }
 
         /// <summary>

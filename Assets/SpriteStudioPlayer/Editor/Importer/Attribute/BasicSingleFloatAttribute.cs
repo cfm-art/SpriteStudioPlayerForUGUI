@@ -19,6 +19,17 @@ namespace a.spritestudio.editor.attribute
             {
                 return string.Format( "ipType={0}, value={1}", ipType, value );
             }
+
+            /// <summary>
+            /// 同設定か
+            /// </summary>
+            /// <param name="v"></param>
+            /// <returns></returns>
+            public override bool IsSameValue( ValueBase v )
+            {
+                float diff = System.Math.Abs( value - ((Value) v).value );
+                return diff < float.Epsilon;
+            }
         }
 
         /// <summary>

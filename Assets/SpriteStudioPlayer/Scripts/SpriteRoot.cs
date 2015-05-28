@@ -94,6 +94,11 @@ namespace a.spritestudio
         private bool isPause_;
 
         /// <summary>
+        /// 完了
+        /// </summary>
+        public event System.Action<SpriteRoot> OnComplete;
+
+        /// <summary>
         /// 開始
         /// </summary>
         void Start()
@@ -105,6 +110,11 @@ namespace a.spritestudio
             }
             parts_ = new Dictionary<string, SpritePart>();
             UpdatePriority();
+
+            // イベント用意
+            if ( OnComplete == null ) {
+                OnComplete = delegate { };
+            }
         }
 
         /// <summary>
@@ -183,6 +193,7 @@ namespace a.spritestudio
             if ( renderers_ != null ) {
                 renderers_.Clear();
             }
+            OnComplete = null;
         }
 
         /// <summary>
@@ -200,7 +211,7 @@ namespace a.spritestudio
             if ( totalFrames_ <= 0 ) { totalFrames_ = 1; }
             if ( isReverse_ ) {
                 // 逆再生
-                frame_ -= isUseDeltaTime_ ? speed_ * Time.deltaTime : 1;
+                frame_ -= !isUseDeltaTime_ ? fps_ * speed_ * Time.deltaTime : 1;
                 if ( frame_ < 0 ) {
                     if ( isLoop_ ) {
                         while ( frame_ < 0 ) {
@@ -209,11 +220,12 @@ namespace a.spritestudio
                     } else {
                         frame_ = 0;
                     }
+                    OnComplete( this );
                 }
                 if ( frame_ >= totalFrames_ ) { frame_ = totalFrames_ - 1; }
             } else {
                 // 順再生
-                frame_ += isUseDeltaTime_ ? speed_ * Time.deltaTime : 1;
+                frame_ += !isUseDeltaTime_ ? fps_ * speed_ * Time.deltaTime : 1;
                 if ( frame_ >= totalFrames_ ) {
                     if ( isLoop_ ) {
                         while ( frame_ >= totalFrames_ ) {
@@ -222,6 +234,7 @@ namespace a.spritestudio
                     } else {
                         frame_ = totalFrames_ - 1;
                     }
+                    OnComplete( this );
                 }
                 if ( frame_ < 0 ) { frame_ = 0; }
             }
@@ -259,6 +272,18 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// パーツ検索
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public SpritePart FindPart( string name )
+        {
+            SpritePart result;
+            parts_.TryGetValue( name, out result );
+            return result;
+        }
+
+        /// <summary>
         /// フレーム数
         /// </summary>
         public int TotalFrames
@@ -282,6 +307,20 @@ namespace a.spritestudio
         public CellMap CellMap( int index )
         {
             return cellMaps_[index];
+        }
+
+        /// <summary>
+        /// 速度の指定
+        /// </summary>
+        public float Speed
+        {
+            get { return speed_; }
+            set
+            {
+                if ( value > 0 ) {
+                    speed_ = value;
+                }
+            }
         }
 
         /// <summary>
@@ -315,5 +354,15 @@ namespace a.spritestudio
         {
             get { return !IsPause && gameObject.activeInHierarchy; }
         }
+
+        /// <summary>
+        /// 逆再生
+        /// </summary>
+        public bool IsReverse
+        {
+            get { return isReverse_; }
+            set { isReverse_ = value; }
+        }
+
     }
 }

@@ -17,6 +17,15 @@ namespace a.spritestudio.editor
         /// </summary>
         public abstract class ValueBase
         {
+            /// <summary>
+            /// 同じ数値か
+            /// </summary>
+            /// <param name="v"></param>
+            /// <returns></returns>
+            public virtual bool IsSameValue( ValueBase v )
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -133,6 +142,20 @@ namespace a.spritestudio.editor
             }
             // 最終フレームは入れておく
             results[totalFrames - 1] = results[finalIndex];
+
+            // 同一数値のキーを間引く
+            for ( int i = 0; i < results.Count - 2; ++i ) {
+                if ( results[i] == null ) { continue; }
+                for ( int j = i + 1; j < results.Count - 1; ++j ) {
+                    if ( results[j] == null ) { continue; }
+                    if ( results[i].IsSameValue( results[j] ) ) {
+                        results[j] = null;
+                    } else {
+                        i = j - 1;
+                        break;
+                    }
+                }
+            }
 
             // エンジン側のクラスに一括変換
             return (from o in results.AsReadOnly() select o != null ? CreateKeyFrame( part, o ) : null).ToList().AsReadOnly();

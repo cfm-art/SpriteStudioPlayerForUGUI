@@ -51,6 +51,8 @@ namespace a.spritestudio
         /// </summary>
         void Start()
         {
+            oldFrame_ = -1;
+            root_.AddPart( name, this );
             SetupVertices();
             SetFrame( 0 );
         }
@@ -151,13 +153,30 @@ namespace a.spritestudio
         /// <param name="frame"></param>
         public void SetFrame( int frame )
         {
-            // TODO: 非キーフレームの取り扱い -> 最初と最後のフレームは全てあるのでそこから何とか？
-            //       もしくは非キーフレームも全て生成しちゃう？
             try {
-                KeyFrame attributes = keyFrames_[frame];
+                if ( root_.IsReverse ) {
+                    // 逆再生
+                    if ( oldFrame_ < frame ) {
+                        oldFrame_ = keyFrames_.Length;
+                    }
+                    for ( int f = oldFrame_ - 1; f >= frame; --f ) {
+                        KeyFrame attributes = keyFrames_[f];
+                        foreach ( var attribute in attributes ) {
+                            attribute.Do( this );
+                        }
+                    }
+                } else {
+                    // 順再生
+                    if ( oldFrame_ > frame ) {
+                        oldFrame_ = -1;
+                    }
+                    for ( int f = oldFrame_ + 1; f <= frame; ++f ) {
+                        KeyFrame attributes = keyFrames_[frame];
 
-                foreach ( var attribute in attributes ) {
-                    attribute.Do( this );
+                        foreach ( var attribute in attributes ) {
+                            attribute.Do( this );
+                        }
+                    }
                 }
             } catch {
                 Debug.LogError( "out of range:" + keyFrames_.Length + "/" + frame );
