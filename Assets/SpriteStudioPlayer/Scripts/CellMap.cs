@@ -85,7 +85,7 @@ namespace a.spritestudio
             uv_.Add( coord );
             width_.Add( width );
             height_.Add( height );
-            pivot_.Add( new Vector2( pivot[0], pivot[1] ) );
+            pivot_.Add( new Vector2( pivot[0] + 0.5f, pivot[1] + 0.5f ) );
 
             fragmentMap_.Add( name, index );
         }

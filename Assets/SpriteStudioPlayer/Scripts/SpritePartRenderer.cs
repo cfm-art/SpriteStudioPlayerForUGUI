@@ -144,8 +144,6 @@ namespace a.spritestudio
 
             // PIVOT
             var pivot = cellMap_.Pivot( mapIndex );
-            pivot.x += 0.5f;
-            pivot.y += 0.5f;
             position_ = new Vector3( size_.x * -pivot.x, size_.y * -pivot.y, 0 );
             rectTransform.pivot = pivot;
             part_.GetComponent<RectTransform>().pivot = rectTransform.pivot;

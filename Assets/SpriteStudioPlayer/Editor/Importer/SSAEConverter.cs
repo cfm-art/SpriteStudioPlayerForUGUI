@@ -29,7 +29,7 @@ namespace a.spritestudio.editor
 
                 // アニメーションの生成
                 foreach ( var anime in animationData.animations ) {
-                    var o = new GameObject( anime.name, typeof( SpriteRoot ) );
+                    var o = new GameObject( anime.name, typeof( SpriteRoot ), typeof( RectTransform ) );
                     results.Add( o );
 
                     var root = o.GetComponent<SpriteRoot>();
