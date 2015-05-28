@@ -19,8 +19,13 @@ namespace a.spritestudio.attribute
         /// <param name="value"></param>
         public static AttributeBase Create( int target, float value )
         {
-            var self = new AttributeBase( AttributeBase.Target.kPosition,
-                new int[] { target }, new float[] { value }, null );
+            var self = new AttributeBase(
+                target == kTargetX
+                    ? AttributeBase.Target.kPositionX
+                    : target == kTargetY
+                        ? AttributeBase.Target.kPositionY
+                        : AttributeBase.Target.kPositionZ,
+                null, new float[] { value }, null );
             return self;
         }
 
@@ -28,10 +33,34 @@ namespace a.spritestudio.attribute
         /// 処理
         /// </summary>
         /// <param name="part"></param>
-        public static void OnUpdate( SpritePart part, AttributeBase attribute )
+        public static void OnUpdateX( SpritePart part, AttributeBase attribute )
         {
             var position = part.transform.localPosition;
-            position[attribute.@int( 0 )] = attribute.@float( 0 );
+            position.x = attribute.@float( 0 );
+            part.transform.localPosition = position;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="attribute"></param>
+        public static void OnUpdateY( SpritePart part, AttributeBase attribute )
+        {
+            var position = part.transform.localPosition;
+            position.y = attribute.@float( 0 );
+            part.transform.localPosition = position;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="attribute"></param>
+        public static void OnUpdateZ( SpritePart part, AttributeBase attribute )
+        {
+            var position = part.transform.localPosition;
+            position.z = attribute.@float( 0 );
             part.transform.localPosition = position;
         }
     }

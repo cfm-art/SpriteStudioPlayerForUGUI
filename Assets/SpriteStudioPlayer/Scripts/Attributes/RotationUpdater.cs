@@ -19,7 +19,13 @@ namespace a.spritestudio.attribute
         /// <param name="value"></param>
         public static AttributeBase Create( int target, float value )
         {
-            var self = new AttributeBase( AttributeBase.Target.kRotation, new int[] { target }, new float[] { value }, null );
+            var self = new AttributeBase(
+                target == kTargetX
+                    ? AttributeBase.Target.kRotationX
+                    : target == kTargetY
+                        ? AttributeBase.Target.kRotationY
+                        : AttributeBase.Target.kRotationZ,
+                null, new float[] { value }, null );
             return self;
         }
 
@@ -27,11 +33,39 @@ namespace a.spritestudio.attribute
         /// 処理
         /// </summary>
         /// <param name="part"></param>
-        public static void OnUpdate( SpritePart part, AttributeBase attribute )
+        public static void OnUpdateX( SpritePart part, AttributeBase attribute )
         {
             var rotation = part.transform.localRotation;
             var angles = rotation.eulerAngles;
-            angles[attribute.@int( 0 )] = attribute.@float( 0 );
+            angles.x = attribute.@float( 0 );
+            rotation.eulerAngles = angles;
+            part.transform.localRotation = rotation;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="attribute"></param>
+        public static void OnUpdateY( SpritePart part, AttributeBase attribute )
+        {
+            var rotation = part.transform.localRotation;
+            var angles = rotation.eulerAngles;
+            angles.y = attribute.@float( 0 );
+            rotation.eulerAngles = angles;
+            part.transform.localRotation = rotation;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="attribute"></param>
+        public static void OnUpdateZ( SpritePart part, AttributeBase attribute )
+        {
+            var rotation = part.transform.localRotation;
+            var angles = rotation.eulerAngles;
+            angles.z = attribute.@float( 0 );
             rotation.eulerAngles = angles;
             part.transform.localRotation = rotation;
         }

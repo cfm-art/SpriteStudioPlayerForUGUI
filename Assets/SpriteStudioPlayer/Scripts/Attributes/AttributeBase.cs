@@ -15,11 +15,17 @@ namespace a.spritestudio.attribute
         public enum Target
         {
             kCell,
-            kFliper,
-            kPosition,
+            kFliperH,
+            kFliperV,
+            kPositionX,
+            kPositionY,
+            kPositionZ,
             kPriority,
-            kRotation,
-            kScaling,
+            kRotationX,
+            kRotationY,
+            kRotationZ,
+            kScalingX,
+            kScalingY,
             kTransparency,
             kVisibility
         }
@@ -29,21 +35,26 @@ namespace a.spritestudio.attribute
         /// </summary>
         private static System.Action<SpritePart, AttributeBase>[] Functions = new System.Action<SpritePart, AttributeBase>[] {
             CellUpdater.OnUpdate,
-            Flipper.OnUpdate,
-            PositionUpdater.OnUpdate,
+            Flipper.OnUpdateH,
+            Flipper.OnUpdateV,
+            PositionUpdater.OnUpdateX,
+            PositionUpdater.OnUpdateY,
+            PositionUpdater.OnUpdateZ,
             PriorityUpdater.OnUpdate,
-            RotationUpdater.OnUpdate,
-            ScalingUpdater.OnUpdate,
+            RotationUpdater.OnUpdateX,
+            RotationUpdater.OnUpdateY,
+            RotationUpdater.OnUpdateZ,
+            ScalingUpdater.OnUpdateX,
+            ScalingUpdater.OnUpdateY,
             TransparencyUpdater.OnUpdate,
             VisibilityUpdater.OnUpdate,
         };
-
 
         /// <summary>
         /// 
         /// </summary>
         [SerializeField]
-        private int target_;
+        private Target target_;
         
         /// <summary>
         /// 
@@ -66,13 +77,20 @@ namespace a.spritestudio.attribute
         /// <summary>
         /// 
         /// </summary>
+        [SerializeField]
+        private string[] stringValues_;
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="target"></param>
         /// <param name="intValue"></param>
         /// <param name="floatValue"></param>
         /// <param name="boolValue"></param>
-        public AttributeBase( Target target, int[] intValue, float[] floatValue, bool[] boolValue )
+        /// <param name="stringValue"></param>
+        public AttributeBase( Target target, int[] intValue, float[] floatValue, bool[] boolValue, string[] stringValue = null )
         {
-            target_ = (int) target;
+            target_ = target;
             intValues_ = intValue;
             floatValues_ = floatValue;
             boolValues_ = boolValue;
@@ -84,7 +102,7 @@ namespace a.spritestudio.attribute
         /// <param name="part"></param>
         public void Do( SpritePart part )
         {
-            Functions[target_]( part, this );
+            Functions[(int) target_]( part, this );
         }
 
         /// <summary>

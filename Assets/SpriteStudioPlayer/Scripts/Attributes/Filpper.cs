@@ -14,32 +14,44 @@ namespace a.spritestudio.attribute
         /// <param name="isVisible"></param>
         public static AttributeBase Create( bool isFlip, bool isHorizontal )
         {
-            var self = new AttributeBase( AttributeBase.Target.kFliper, null, null,
-                    new bool[] { isFlip, isHorizontal } );
+            var self = new AttributeBase(
+                    isHorizontal ? AttributeBase.Target.kFliperH : AttributeBase.Target.kFliperV,
+                    null, null,
+                    new bool[] { isFlip } );
             return self;
         }
 
         /// <summary>
         /// 処理
+        /// 横反転
         /// </summary>
         /// <param name="part"></param>
-        public static void OnUpdate( SpritePart part, AttributeBase attribute )
+        public static void OnUpdateH( SpritePart part, AttributeBase attribute )
         {
             bool isFlip = attribute.@bool( 0 );
-            bool isHorizontal = attribute.@bool( 1 );
             var scale = part.transform.localScale;
-            if ( isHorizontal ) {
-                if ( isFlip ) {
-                    scale.x = -Mathf.Abs( scale.x );
-                } else {
-                    scale.x = Mathf.Abs( scale.x );
-                }
+            if ( isFlip ) {
+                scale.x = -Mathf.Abs( scale.x );
             } else {
-                if ( isFlip ) {
-                    scale.y = -Mathf.Abs( scale.y );
-                } else {
-                    scale.y = Mathf.Abs( scale.y );
-                }
+                scale.x = Mathf.Abs( scale.x );
+            }
+            part.transform.localScale = scale;
+        }
+
+        /// <summary>
+        /// 処理
+        /// 縦反転
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="attribute"></param>
+        public static void OnUpdateV( SpritePart part, AttributeBase attribute )
+        {
+            bool isFlip = attribute.@bool( 0 );
+            var scale = part.transform.localScale;
+            if ( isFlip ) {
+                scale.y = -Mathf.Abs( scale.y );
+            } else {
+                scale.y = Mathf.Abs( scale.y );
             }
             part.transform.localScale = scale;
         }
