@@ -33,8 +33,7 @@ namespace a.spritestudio.editor
                     results.Add( o );
 
                     var root = o.GetComponent<SpriteRoot>();
-                    root.SetupSpriteHolder();
-                    root.SetupCellMaps( requiredCellMap );
+                    InitializeRoot( root, projectInformation, anime.settings, requiredCellMap );
 
                     SortedDictionary<int, GameObject> partsObjects = new SortedDictionary<int, GameObject>();
 
@@ -97,6 +96,44 @@ namespace a.spritestudio.editor
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// ルートの初期化
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="information"></param>
+        /// <param name="settings"></param>
+        /// <param name="requiredCellMap"></param>
+        private static void InitializeRoot( SpriteRoot root, SSPJImporter.Information information,
+           SSAEImporter.OverrideSettings settings,
+            List<CellMap> requiredCellMap )
+        {
+            root.Setup( Pick( information.fps, settings.fps ),
+                    Pick( information.frameCount, settings.frameCount ),
+                    Pick( information.pivotX, settings.pivotX ),
+                    Pick( information.pivotY, settings.pivotY ) );
+            root.SetupSpriteHolder();
+            root.SetupCellMaps( requiredCellMap );
+        }
+
+        /// <summary>
+        /// Nullableのうち有効なものから1つ取り出す
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="defaultValue"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        private static T Pick<T>( T defaultValue, params T?[] values )
+            where T : struct
+        {
+            for ( int i = 0; i < values.Length; ++i ) {
+                T? t = values[i];
+                if ( t.HasValue ) {
+                    return t.Value;
+                }
+            }
+            return defaultValue;
         }
     }
 }

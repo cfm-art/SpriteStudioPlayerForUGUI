@@ -24,7 +24,11 @@ namespace a.spritestudio.editor
         /// <returns></returns>
         public static Interpolater GetInterpolater( string type )
         {
-            return interpolater_[type];
+            Interpolater i;
+            if ( interpolater_.TryGetValue( type, out i ) ) {
+                return i;
+            }
+            return new interpolater.Linear();
         }
 
         /// <summary>

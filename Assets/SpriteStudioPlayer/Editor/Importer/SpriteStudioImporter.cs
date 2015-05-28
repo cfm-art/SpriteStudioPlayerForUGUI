@@ -26,7 +26,11 @@ namespace a.spritestudio.editor
         {
             foreach ( string str in importedAssets ) {
                 if ( str.EndsWith( ".sspj" ) ) {
+                    Tracer.enable = true;
+                    Tracer.Startup();
+                    Tracer.Log( "Start import : " + str );
                     Import( str );
+                    Tracer.Dump();
                 }
             }
         }

@@ -88,6 +88,12 @@ namespace a.spritestudio
         private List<SpritePartRenderer> renderers_;
 
         /// <summary>
+        /// 一時停止
+        /// </summary>
+        [SerializeField]
+        private bool isPause_;
+
+        /// <summary>
         /// 開始
         /// </summary>
         void Start()
@@ -99,6 +105,21 @@ namespace a.spritestudio
             }
             parts_ = new Dictionary<string, SpritePart>();
             UpdatePriority();
+        }
+
+        /// <summary>
+        /// 基本設定
+        /// </summary>
+        /// <param name="fps"></param>
+        /// <param name="frames"></param>
+        /// <param name="pivotX"></param>
+        /// <param name="pivotY"></param>
+        public void Setup( int fps, int frames, float pivotX, float pivotY )
+        {
+            fps_ = fps;
+            totalFrames_ = frames;
+            //pivotX_ = pivotX;
+            //pivotY_ = pivotY;
         }
 
         /// <summary>
@@ -169,7 +190,12 @@ namespace a.spritestudio
         /// </summary>
         void Update()
         {
+#if UNITY_EDITOR
             if ( !Application.isPlaying ) { return; }
+#endif
+            // 一時停止判定
+            if ( isPause_ ) { return; }
+
             // フレーム制御
             if ( totalFrames_ <= 0 ) { totalFrames_ = 1; }
             if ( isReverse_ ) {
@@ -188,7 +214,7 @@ namespace a.spritestudio
             } else {
                 // 順再生
                 frame_ += isUseDeltaTime_ ? speed_ * Time.deltaTime : 1;
-                if ( frame_ > totalFrames_ ) {
+                if ( frame_ >= totalFrames_ ) {
                     if ( isLoop_ ) {
                         while ( frame_ >= totalFrames_ ) {
                             frame_ -= totalFrames_;
@@ -200,7 +226,7 @@ namespace a.spritestudio
                 if ( frame_ < 0 ) { frame_ = 0; }
             }
             // intへの変換コストの為に事前にintへ
-            currentFrame_ = (int) frame_;
+            currentFrame_ = (int) Mathf.FloorToInt( frame_ );
         }
 
         /// <summary>
@@ -208,6 +234,7 @@ namespace a.spritestudio
         /// </summary>
         void LateUpdate()
         {
+            if ( isPause_ ) { return; }
             // 優先度更新
             if ( requireUpdatePriority_ ) {
                 renderers_.Sort( ( l, r ) => l.Priority - r.Priority );
@@ -255,6 +282,38 @@ namespace a.spritestudio
         public CellMap CellMap( int index )
         {
             return cellMaps_[index];
+        }
+
+        /// <summary>
+        /// 一時停止する
+        /// </summary>
+        public void Pause()
+        {
+            isPause_ = true;
+        }
+
+        /// <summary>
+        /// 再生
+        /// </summary>
+        public void Play()
+        {
+            isPause_ = false;
+        }
+
+        /// <summary>
+        /// 一時停止中かどうか
+        /// </summary>
+        public bool IsPause
+        {
+            get { return isPause_; }
+        }
+
+        /// <summary>
+        /// 再生中かどうか
+        /// </summary>
+        public bool IsPlaying
+        {
+            get { return !IsPause && gameObject.activeInHierarchy; }
         }
     }
 }

@@ -12,7 +12,6 @@ namespace a.spritestudio
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField]
         private List<attribute.AttributeBase> attributes_;
 
         /// <summary>
