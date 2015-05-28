@@ -22,6 +22,12 @@ namespace a.spritestudio
         private List<Vector4> uv_;
 
         /// <summary>
+        /// 中心
+        /// </summary>
+       [SerializeField]
+        private List<Vector2> pivot_;
+
+        /// <summary>
         /// 横幅
         /// </summary>
         [SerializeField]
@@ -49,6 +55,7 @@ namespace a.spritestudio
             self.uv_ = new List<Vector4>();
             self.width_ = new List<int>();
             self.height_ = new List<int>();
+            self.pivot_ = new List<Vector2>();
             self.fragmentMap_ = new Dictionary<string, int>();
             return self;
         }
@@ -68,7 +75,7 @@ namespace a.spritestudio
         /// <param name="name"></param>
         /// <param name="uv"></param>
         /// <param name="size"></param>
-        public void AddCell( string name, float[] uv, int[] size )
+        public void AddCell( string name, float[] uv, int[] size, float[] pivot )
         {
             Vector4 coord = new Vector4( uv[0], uv[1], uv[2], uv[3] );
             int width = size[0];
@@ -78,6 +85,7 @@ namespace a.spritestudio
             uv_.Add( coord );
             width_.Add( width );
             height_.Add( height );
+            pivot_.Add( new Vector2( pivot[0], pivot[1] ) );
 
             fragmentMap_.Add( name, index );
         }
@@ -108,6 +116,8 @@ namespace a.spritestudio
         public int Width( int index )
         {
             return width_[index];
+            // TODO: 容量減るけど誤差が出る。 -> UV側を0-1でなくテクセル座標系で持つ？
+            //return Mathf.FloorToInt( (uv_[index].z - uv_[index].x) * texture_.width );
         }
 
         /// <summary>
@@ -117,6 +127,18 @@ namespace a.spritestudio
         public int Height( int index )
         {
             return height_[index];
+            // TODO: 容量減るけど誤差が出る。 -> UV側を0-1でなくテクセル座標系で持つ？
+            //return Mathf.FloorToInt( (uv_[index].w - uv_[index].y) * texture_.height );
+        }
+
+        /// <summary>
+        /// PIVOTの取得
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Vector2 Pivot( int index )
+        {
+            return pivot_[index];
         }
     }
 }

@@ -24,12 +24,6 @@ namespace a.spritestudio.attribute
         private float value_;
 
         /// <summary>
-        /// 回転用クォータニオン
-        /// </summary>
-        [System.NonSerialized]
-        private Quaternion rotation_;
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="target"></param>
@@ -46,13 +40,10 @@ namespace a.spritestudio.attribute
         /// <param name="part"></param>
         protected override void OnUpdate( SpritePart part )
         {
-            if ( rotation_ == null ) {
-                Vector3 euler = Vector3.zero;
-                euler[target_] = value_;
-                rotation_ = Quaternion.Euler( euler );
-            }
             var rotation = part.transform.localRotation;
-            rotation *= rotation_;
+            var angles = rotation.eulerAngles;
+            angles[target_] = value_;
+            rotation.eulerAngles = angles;
             part.transform.localRotation = rotation;
         }
     }

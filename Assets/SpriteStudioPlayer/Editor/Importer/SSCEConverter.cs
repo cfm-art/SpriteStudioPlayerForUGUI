@@ -29,7 +29,7 @@ namespace a.spritestudio.editor
 
             cellMap.Texture = texture;
             foreach ( var cell in data.cellMaps ) {
-                cellMap.AddCell( cell.name, cell.uv, cell.size );
+                cellMap.AddCell( cell.name, cell.uv, cell.size, cell.pivot );
             }
 
             return cellMap;

@@ -11,6 +11,7 @@ namespace a.spritestudio
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent( typeof(RectTransform) )]
+    [ExecuteInEditMode]
     public class SpritePart
         : MonoBehaviour
     {
@@ -84,11 +85,15 @@ namespace a.spritestudio
         /// </summary>
         void Update()
         {
+            // TODO: root側でするのがいいかも
             int frame = root_.CurrentFrame;
             if ( oldFrame_ != frame ) {
                 SetFrame( frame );
-
             }
+
+#if UNITY_EDITOR
+            UpdateTransform();
+#endif
         }
 
         /// <summary>
@@ -148,10 +153,15 @@ namespace a.spritestudio
         {
             // TODO: 非キーフレームの取り扱い -> 最初と最後のフレームは全てあるのでそこから何とか？
             //       もしくは非キーフレームも全て生成しちゃう？
-            KeyFrame attributes = keyFrames_[frame];
+            try {
+                KeyFrame attributes = keyFrames_[frame];
 
-            foreach ( var attribute in attributes ) {
-                attribute.Update( this );
+                foreach ( var attribute in attributes ) {
+                    attribute.Update( this );
+                }
+            } catch {
+                Debug.LogError( "out of range:" + keyFrames_.Count + "/" + frame );
+                throw;
             }
 
             oldFrame_ = frame;
@@ -188,6 +198,8 @@ namespace a.spritestudio
         private static void CopyTransform( RectTransform from, RectTransform to )
         {
             to.position = from.position;
+            to.rotation = from.rotation;
+            to.localScale = from.localScale;
         }
     }
 }

@@ -137,9 +137,19 @@ namespace a.spritestudio
         public void SetCellMap( int index, int mapIndex )
         {
             cellMap_ = part_.Root.CellMap( index );
+
+            // UV
             size_ = new Vector2( cellMap_.Width( mapIndex ), cellMap_.Height( mapIndex ) );
             uv_ = cellMap_.UV( mapIndex );
-            position_ = size_ * -0.5f;
+
+            // PIVOT
+            var pivot = cellMap_.Pivot( mapIndex );
+            pivot.x += 0.5f;
+            pivot.y += 0.5f;
+            position_ = new Vector3( size_.x * -pivot.x, size_.y * -pivot.y, 0 );
+            rectTransform.pivot = pivot;
+            part_.GetComponent<RectTransform>().pivot = rectTransform.pivot;
+            
             UpdateVertices();
             SetMaterialDirty();
         }
