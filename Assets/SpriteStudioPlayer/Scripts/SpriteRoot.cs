@@ -63,7 +63,7 @@ namespace a.spritestudio
         /// 利用しない場合はFPSによらずゲーム1フレームに付き1フレーム進む。
         /// </summary>
         [SerializeField]
-        private bool isUseDeltaTime_;
+        private bool isUseDeltaTime_ = true;
 
         /// <summary>
         /// Spriteを保持する場所
@@ -211,7 +211,7 @@ namespace a.spritestudio
             if ( totalFrames_ <= 0 ) { totalFrames_ = 1; }
             if ( isReverse_ ) {
                 // 逆再生
-                frame_ -= !isUseDeltaTime_ ? fps_ * speed_ * Time.deltaTime : 1;
+                frame_ -= isUseDeltaTime_ ? fps_ * speed_ * Time.deltaTime : 1;
                 if ( frame_ < 0 ) {
                     if ( isLoop_ ) {
                         while ( frame_ < 0 ) {
@@ -225,7 +225,7 @@ namespace a.spritestudio
                 if ( frame_ >= totalFrames_ ) { frame_ = totalFrames_ - 1; }
             } else {
                 // 順再生
-                frame_ += !isUseDeltaTime_ ? fps_ * speed_ * Time.deltaTime : 1;
+                frame_ += isUseDeltaTime_ ? fps_ * speed_ * Time.deltaTime : 1;
                 if ( frame_ >= totalFrames_ ) {
                     if ( isLoop_ ) {
                         while ( frame_ >= totalFrames_ ) {
