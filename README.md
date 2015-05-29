@@ -26,16 +26,17 @@ SpriteStudioのデータをUnityのuGUIで再生するためのライブラリ�
 ここで設定された出力先に以下のような構造で出力されます。
 <pre>sspjのファイル名(.sspj)
 　　├ CellMaps
-　　│　　├ 各セルマップ(.ssce)
+　　│　　├ 各セルマップ(.ssce) : assetファイル
 　　│　　：　　：
-　　│　　└ 各セルマップ(.ssce)
+　　│　　└ 各セルマップ(.ssce) : assetファイル
 　　└ Sprites
 　　　　├ 各アニメーショングループ(.ssae)
-　　　　│　　├ 各アニメーション(.ssae内&lt;anime&gt;)
+　　　　│　　├ 各アニメーション(.ssae内&lt;anime&gt;) : prefab
 　　　　│　　：　　：
-　　　　│　　└ 各アニメーション(.ssae内&lt;anime&gt;)
+　　　　│　　└ 各アニメーション(.ssae内&lt;anime&gt;) : prefab
 　　　　：
 　　　　└各アニメーショングループ(.ssae)
+　　　　　　　：
 </pre>
 
 Prefab
@@ -48,6 +49,6 @@ uGUIのCanvas内にPrefabをInstantiateすることで表示する事が出来�
 その他
 ==
 以下のフォルダは開発の都合で.gitignoreに登録されています。
-/SpriteStudioForUGUI/Assets/Export
+/SpriteStudioForUGUI/Assets/Exports
 /SpriteStudioForUGUI/Assets/SampleData
 
