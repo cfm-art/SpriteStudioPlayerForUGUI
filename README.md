@@ -24,6 +24,7 @@ SpriteStudioのデータをUnityのuGUIで再生するためのライブラリ�
 ## 出力先
 メニューの「SpriteStudioForUGUI/出力先の設定」から指定出来ます。
 ここで設定された出力先に以下のような構造で出力されます。
+<pre>
 sspjのファイル名(.sspj)
 　　├ CellMaps
 　　│　　├ 各セルマップ(.ssce)
@@ -31,12 +32,12 @@ sspjのファイル名(.sspj)
 　　│　　└ 各セルマップ(.ssce)
 　　└ Sprites
 　　　　├ 各アニメーショングループ(.ssae)
-　　　　│　　├ 各アニメーション(.ssae内<anime>)
+　　　　│　　├ 各アニメーション(.ssae内&lt;anime&gt;)
 　　　　│　　：　　：
-　　　　│　　└ 各アニメーション(.ssae内<anime>)
+　　　　│　　└ 各アニメーション(.ssae内&lt;anime&gt;)
 　　　　：
 　　　　└各アニメーショングループ(.ssae)
-
+</pre>
 
 Prefab
 ==
