@@ -24,8 +24,7 @@ SpriteStudioのデータをUnityのuGUIで再生するためのライブラリ�
 ## 出力先
 メニューの「SpriteStudioForUGUI/出力先の設定」から指定出来ます。
 ここで設定された出力先に以下のような構造で出力されます。
-<pre>
-sspjのファイル名(.sspj)
+<pre>sspjのファイル名(.sspj)
 　　├ CellMaps
 　　│　　├ 各セルマップ(.ssce)
 　　│　　：　　：
@@ -44,4 +43,11 @@ Prefab
 
 インポートするとセルマップの情報が格納されたassetファイルと、スプライト情報が構築されたPrefabが生成されます。
 uGUIのCanvas内にPrefabをInstantiateすることで表示する事が出来ます。
+
+
+その他
+==
+以下のフォルダは開発の都合で.gitignoreに登録されています。
+/SpriteStudioForUGUI/Assets/Export
+/SpriteStudioForUGUI/Assets/SampleData
 
