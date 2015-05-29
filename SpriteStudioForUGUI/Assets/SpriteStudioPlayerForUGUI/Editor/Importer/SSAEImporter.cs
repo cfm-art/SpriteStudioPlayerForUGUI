@@ -65,8 +65,12 @@ namespace a.spritestudio.editor
                 //inheritRates
                 blendType = AlphaBlendTypeOperator.FromString( node.AtText( "alphaBlendType" ) );
                 show = node.AtBoolean( "show" );
-                expandAttribute = node.AtText( "expandAttribute" );
-                expandChildren = node.AtText( "expandChildren" );
+
+                var n = node.ChildOrNull( "expandAttribute" );
+                expandAttribute = n != null ? n.AtText() : null;
+
+                n = node.ChildOrNull( "expandChildren" );
+                expandChildren = n != null ? n.AtText() : null;
             }
 
             public override string ToString()
