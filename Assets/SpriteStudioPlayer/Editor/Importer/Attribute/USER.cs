@@ -35,5 +35,17 @@
                 return false;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override spritestudio.attribute.AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
+        {
+            Value v = (Value) value;
+            return spritestudio.attribute.UserDataNotifier.Create( v.value );
+        }
     }
 }

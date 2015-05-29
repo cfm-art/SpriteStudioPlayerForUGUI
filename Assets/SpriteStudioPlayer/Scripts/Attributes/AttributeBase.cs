@@ -10,7 +10,9 @@ namespace a.spritestudio.attribute
     public class AttributeBase
     {
         /// <summary>
-        /// 
+        /// 処理の指定
+        /// 順番遵守。
+        /// 順番が変わった場合はそれまでのprefabが正しく再生されなくなる。
         /// </summary>
         public enum Target
         {
@@ -27,11 +29,13 @@ namespace a.spritestudio.attribute
             kScalingX,
             kScalingY,
             kTransparency,
-            kVisibility
+            kVisibility,
+            kUserNotify,
         }
 
         /// <summary>
         /// 関数テーブル
+        /// enum Targetと同じ順番で用意する。
         /// </summary>
         private static System.Action<SpritePart, AttributeBase>[] Functions = new System.Action<SpritePart, AttributeBase>[] {
             CellUpdater.OnUpdate,
@@ -48,34 +52,35 @@ namespace a.spritestudio.attribute
             ScalingUpdater.OnUpdateY,
             TransparencyUpdater.OnUpdate,
             VisibilityUpdater.OnUpdate,
+            UserDataNotifier.OnUpdate,
         };
 
         /// <summary>
-        /// 
+        /// 処理の対象
         /// </summary>
         [SerializeField]
         private Target target_;
         
         /// <summary>
-        /// 
+        /// 整数のパラメータ
         /// </summary>
         [SerializeField]
         private int[] intValues_;
 
         /// <summary>
-        /// 
+        /// 小数のパラメータ
         /// </summary>
         [SerializeField]
         private float[] floatValues_;
 
         /// <summary>
-        /// 
+        /// 真偽値のパラメータ
         /// </summary>
         [SerializeField]
         private bool[] boolValues_;
 
         /// <summary>
-        /// 
+        /// 文字列のパラメータ
         /// </summary>
         [SerializeField]
         private string[] stringValues_;
@@ -106,7 +111,7 @@ namespace a.spritestudio.attribute
         }
 
         /// <summary>
-        /// 
+        /// 整数パラメータの取得
         /// </summary>
         /// <param name="no"></param>
         /// <returns></returns>
@@ -116,7 +121,7 @@ namespace a.spritestudio.attribute
         }
 
         /// <summary>
-        /// 
+        /// 小数パラメータの取得
         /// </summary>
         /// <param name="no"></param>
         /// <returns></returns>
@@ -126,13 +131,23 @@ namespace a.spritestudio.attribute
         }
 
         /// <summary>
-        /// 
+        /// 真偽値パラメータの取得
         /// </summary>
         /// <param name="no"></param>
         /// <returns></returns>
         public bool @bool( int no )
         {
             return boolValues_[no];
+        }
+
+        /// <summary>
+        /// 文字列パラメータの取得
+        /// </summary>
+        /// <param name="no"></param>
+        /// <returns></returns>
+        public string @string( int no )
+        {
+            return stringValues_[no];
         }
     }
 }

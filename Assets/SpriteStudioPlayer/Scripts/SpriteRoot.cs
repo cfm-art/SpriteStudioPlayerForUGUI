@@ -99,6 +99,11 @@ namespace a.spritestudio
         public event System.Action<SpriteRoot> OnComplete;
 
         /// <summary>
+        /// ユーザー定義の通知
+        /// </summary>
+        public event System.Action<SpriteRoot, SpritePart, string> OnUserData;
+
+        /// <summary>
         /// 開始
         /// </summary>
         void Start()
@@ -114,6 +119,9 @@ namespace a.spritestudio
             // イベント用意
             if ( OnComplete == null ) {
                 OnComplete = delegate { };
+            }
+            if ( OnUserData == null ) {
+                OnUserData = delegate { };
             }
         }
 
@@ -194,6 +202,7 @@ namespace a.spritestudio
                 renderers_.Clear();
             }
             OnComplete = null;
+            OnUserData = null;
         }
 
         /// <summary>
@@ -281,6 +290,16 @@ namespace a.spritestudio
             SpritePart result;
             parts_.TryGetValue( name, out result );
             return result;
+        }
+
+        /// <summary>
+        /// ユーザーデータキーの通知
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="message"></param>
+        public void NotifyUserData( SpritePart part, string message )
+        {
+            OnUserData( this, part, message );
         }
 
         /// <summary>
