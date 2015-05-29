@@ -175,8 +175,10 @@ namespace a.spritestudio.editor
         /// <summary>
         /// インポート
         /// </summary>
-        /// <param name="fil"></param>
-        public Information Import( string fileName )
+        /// <param name="fileName"></param>
+        /// <param name="ssceName"></param>
+        /// <param name="targets"></param>
+        public Information Import( string fileName, string ssceName, SSPJImportTool.TargetAnimation[] targets )
         {
             var xml = new XmlDocument();
             xml.Load( fileName );
@@ -193,7 +195,10 @@ namespace a.spritestudio.editor
 
             // アニメーション情報
             var animeNode = NodeReader.findFirst( xml, "SpriteStudioAnimePack/animeList" ).Children( "anime" );
-            var animes = from a in animeNode.Nodes select new Animation( a );
+            var animes = targets == null ? from a in animeNode.Nodes select new Animation( a )
+                : from a in animeNode.Nodes
+                         where System.Array.Find( targets, (o) => o.File == ssceName && o.Animation == a.AtText( "name" ) ) != null
+                         select new Animation( a );
 
             return new Information() {
                 settings = overrideSettings,
@@ -201,6 +206,21 @@ namespace a.spritestudio.editor
                 parts = parts.ToList().AsReadOnly(),
                 animations = animes.ToList().AsReadOnly(),
             };
+        }
+
+        /// <summary>
+        /// 名前のみ取得する
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public ReadOnlyCollection<string> ImportNamesOnly( string fileName )
+        {
+            var xml = new XmlDocument();
+            xml.Load( fileName );
+
+            var animeNode = NodeReader.findFirst( xml, "SpriteStudioAnimePack/animeList" ).Children( "anime" );
+            var animes = from a in animeNode.Nodes select a.AtText( "name" );
+            return animes.ToList().AsReadOnly();
         }
 
         /// <summary>

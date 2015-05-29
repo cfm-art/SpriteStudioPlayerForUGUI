@@ -11,6 +11,7 @@ namespace a.spritestudio.editor
     public class SpriteStudioImporter
         : AssetPostprocessor
     {
+
         /// <summary>
         /// 
         /// </summary>
@@ -26,25 +27,69 @@ namespace a.spritestudio.editor
         {
             foreach ( string str in importedAssets ) {
                 if ( str.EndsWith( ".sspj" ) ) {
-                    Tracer.enable = true;
+                    bool isAutoImport = EditorPrefs.GetBool( "assfugui-ai", false );
+                    Tracer.enable = MenuItems.ImportLog;
                     Tracer.Startup();
                     Tracer.Log( "Start import : " + str );
-                    Import( str );
+                    if ( isAutoImport ) {
+                        Import( str, null );
+                    } else {
+                        CreateImportTool( str );
+                    }
                     Tracer.Dump();
                 }
             }
         }
 
         /// <summary>
+        /// インポート用のツールだけ生成
+        /// </summary>
+        /// <param name="file"></param>
+        private static void CreateImportTool( string file )
+        {
+            string path = Path.GetDirectoryName( file );
+
+            // インポート用ツール生成
+            SSPJImportTool tool = SSPJImportTool.Create( Path.GetFileNameWithoutExtension( file ) );
+            AssetDatabase.CreateAsset( tool, file + ".asset" );
+
+            // sspjのインポート
+            var projectInformation = new SSPJImporter().Import( file );
+            Tracer.Log( projectInformation.ToString() );
+
+            foreach ( var cell in projectInformation.cellMaps ) {
+                tool.AddCell( Path.GetFileNameWithoutExtension( cell ) );
+            }
+
+            foreach ( var animation in projectInformation.animePacks ) {
+                // ssaeをパース
+                var ssaeInformation = new SSAEImporter().ImportNamesOnly( path + '\\' + animation );
+                Tracer.Log( ssaeInformation.ToString() );
+
+                var name = Path.GetFileNameWithoutExtension( animation );
+                foreach ( var fragment in ssaeInformation ) {
+                    tool.AddAnimation( name, fragment );
+                }
+            }
+
+            EditorUtility.SetDirty( tool );
+        }
+
+        /// <summary>
         /// インポート
         /// </summary>
         /// <param name="file"></param>
-        private static void Import( string file )
+        /// <param name="targets"></param>
+        internal static void Import( string file, SSPJImportTool.TargetAnimation[] targets )
         {
             // TODO: 出力先は自由に出来るようにする
             string exportPath = "Assets/Exports/";
 
             string path = Path.GetDirectoryName( file );
+
+            // インポート用ツール生成
+            SSPJImportTool tool = SSPJImportTool.Create( Path.GetFileNameWithoutExtension( file ) );
+            AssetDatabase.CreateAsset( tool, file + ".asset" );
 
             // マテリアル
             Dictionary<types.AlphaBlendType, Material> materials = new Dictionary<types.AlphaBlendType, Material>() {
@@ -56,7 +101,6 @@ namespace a.spritestudio.editor
 
             // sspjのインポート
             var projectInformation = new SSPJImporter().Import( file );
-            Tracer.Log( projectInformation.ToString() );
 
             // ssceのインポート
             List<CellMap> cellMap = new List<CellMap>();
@@ -69,6 +113,8 @@ namespace a.spritestudio.editor
                 // エンジン側の形式へ変更
                 var converter = new SSCEConverter();
                 cellMap.Add( converter.Convert( path + '\\', ssceInformation ) );
+
+                tool.AddCell( Path.GetFileNameWithoutExtension( cell ) );
             }
             
             // セルマップの保存
@@ -76,7 +122,14 @@ namespace a.spritestudio.editor
             for ( int i = 0; i < cellMap.Count; ++i ) {
                 var cell = cellMap[i];
                 string fileName = exportPath + "CellMaps/" + cell.name + ".asset";
-                AssetDatabase.CreateAsset( cell, fileName );
+                var savedCellMap = AssetDatabase.LoadAssetAtPath( fileName, typeof( CellMap ) );
+                if ( savedCellMap == null ) {
+                    AssetDatabase.CreateAsset( cell, fileName );
+                } else {
+                    // 既にあるので上書きする
+                    cell.CopyTo( savedCellMap as CellMap );
+                    EditorUtility.SetDirty( savedCellMap );
+                }
                 cellMap[i] = (CellMap) AssetDatabase.LoadAssetAtPath( fileName, typeof( CellMap ) );
 
                 Tracer.Log( "Save CellMap:" + fileName );
@@ -87,8 +140,14 @@ namespace a.spritestudio.editor
             try {
                 string basePath = exportPath + "Sprites/" + Path.GetFileNameWithoutExtension( file );
                 foreach ( var animation in projectInformation.animePacks ) {
+                    var ssceName = Path.GetFileNameWithoutExtension( animation );
+                    if ( targets != null ) {
+                        // 対象に含まれているか判定
+                        bool isLoad = System.Array.Find( targets, ( o ) => o.File == ssceName ) != null;
+                        if ( !isLoad ) { continue; }
+                    }
                     // ssaeをパース
-                    var ssaeInformation = new SSAEImporter().Import( path + '\\' + animation );
+                    var ssaeInformation = new SSAEImporter().Import( path + '\\' + animation, ssceName, targets );
                     Tracer.Log( ssaeInformation.ToString() );
 
                     // GameObjectへ変換
@@ -102,9 +161,17 @@ namespace a.spritestudio.editor
                     CreateFolders( basePath + "/" + name );
                     foreach ( var prefab in result.animations ) {
                         string fileName = basePath + "/" + name + "/" + prefab.name + ".prefab";
-                        PrefabUtility.CreatePrefab( fileName, prefab );
+                        var savedPrefab = AssetDatabase.LoadAssetAtPath( fileName, typeof( GameObject ) );
+                        if ( savedPrefab == null ) {
+                            PrefabUtility.CreatePrefab( fileName, prefab );
+                        } else {
+                            // 既にあるので置き換え
+                            PrefabUtility.ReplacePrefab( prefab, savedPrefab );
+                        }
 
                         Tracer.Log( "Save Prefab:" + fileName );
+
+                        tool.AddAnimation( name, prefab.name );
                     }
                 }
             } finally {
@@ -114,6 +181,7 @@ namespace a.spritestudio.editor
                         GameObject.DestroyImmediate( p );
                     }
                 }
+                EditorUtility.SetDirty( tool );
                 AssetDatabase.SaveAssets();
             }
         }

@@ -61,6 +61,20 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// コピー
+        /// </summary>
+        /// <param name="o"></param>
+        public void CopyTo( CellMap o )
+        {
+            o.uv_ = uv_;
+            o.width_ = width_;
+            o.height_ = height_;
+            o.pivot_ = pivot_;
+            o.fragmentMap_ = fragmentMap_;
+            o.texture_ = texture_;
+        }
+
+        /// <summary>
         /// テクスチャの設定
         /// </summary>
         public Texture Texture
