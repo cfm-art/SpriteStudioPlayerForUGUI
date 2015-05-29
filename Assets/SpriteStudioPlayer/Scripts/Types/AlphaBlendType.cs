@@ -4,7 +4,8 @@
     {
         kMix,
         kAdd,
-        kMultiply,
+        kMul,
+        kSub,
     }
 
     public static class AlphaBlendTypeOperator
@@ -14,6 +15,12 @@
             switch ( v ) {
                 case "mix":
                     return AlphaBlendType.kMix;
+                case "mul":
+                    return AlphaBlendType.kMul;
+                case "sub":
+                    return AlphaBlendType.kSub;
+                case "add":
+                    return AlphaBlendType.kAdd;
 
                 default:
                     return AlphaBlendType.kMix;

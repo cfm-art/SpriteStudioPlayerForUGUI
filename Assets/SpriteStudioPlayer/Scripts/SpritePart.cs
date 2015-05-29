@@ -102,7 +102,8 @@ namespace a.spritestudio
         /// 初期化
         /// </summary>
         /// <param name="root"></param>
-        public void Setup( SpriteRoot root, types.NodeType nodeType )
+        /// <param name="material"></param>
+        public void Setup( SpriteRoot root, types.NodeType nodeType, Material material )
         {
             root_ = root;
 
@@ -111,6 +112,7 @@ namespace a.spritestudio
                 // NULLノードでなければレンダラ生成
                 var r = new GameObject( name, typeof( SpritePartRenderer ) );
                 renderer_ = r.GetComponent<SpritePartRenderer>();
+                renderer_.material = material;
                 root.AddSprite( renderer_ );
                 renderer_.Setup( this );
                 SetupVertices();

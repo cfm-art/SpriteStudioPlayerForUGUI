@@ -46,6 +46,14 @@ namespace a.spritestudio.editor
 
             string path = Path.GetDirectoryName( file );
 
+            // マテリアル
+            Dictionary<types.AlphaBlendType, Material> materials = new Dictionary<types.AlphaBlendType, Material>() {
+                { types.AlphaBlendType.kAdd, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Add.mat", typeof( Material ) ) as Material },
+                { types.AlphaBlendType.kMix, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Mix.mat", typeof( Material ) ) as Material },
+                { types.AlphaBlendType.kMul, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Mul.mat", typeof( Material ) ) as Material },
+                { types.AlphaBlendType.kSub, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Sub.mat", typeof( Material ) ) as Material },
+            };
+
             // sspjのインポート
             var projectInformation = new SSPJImporter().Import( file );
             Tracer.Log( projectInformation.ToString() );
@@ -53,6 +61,7 @@ namespace a.spritestudio.editor
             // ssceのインポート
             List<CellMap> cellMap = new List<CellMap>();
             foreach ( var cell in projectInformation.cellMaps ) {
+                // ssceをパース
                 var importer = new SSCEImporter();
                 var ssceInformation = importer.Import( path + '\\' + cell );
                 Tracer.Log( ssceInformation.ToString() );
@@ -78,11 +87,14 @@ namespace a.spritestudio.editor
             try {
                 string basePath = exportPath + "Sprites/" + Path.GetFileNameWithoutExtension( file );
                 foreach ( var animation in projectInformation.animePacks ) {
+                    // ssaeをパース
                     var ssaeInformation = new SSAEImporter().Import( path + '\\' + animation );
                     Tracer.Log( ssaeInformation.ToString() );
 
+                    // GameObjectへ変換
                     var converter = new SSAEConverter();
-                    var result = converter.Convert( projectInformation, ssaeInformation, cellMap );
+                    var result = converter.Convert( projectInformation,
+                            ssaeInformation, cellMap, materials );
                     prefabs.AddRange( result.animations );
 
                     // prefab保存

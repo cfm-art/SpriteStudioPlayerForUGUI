@@ -15,7 +15,18 @@ namespace a.spritestudio.editor
             public List<GameObject> animations;
         }
 
-        public Result Convert( SSPJImporter.Information projectInformation, SSAEImporter.Information animationData, List<CellMap> cellMaps )
+        /// <summary>
+        /// ssaeのパース結果を変換して、GameObjectを生成
+        /// </summary>
+        /// <param name="projectInformation"></param>
+        /// <param name="animationData"></param>
+        /// <param name="cellMaps"></param>
+        /// <param name="materials"></param>
+        /// <returns></returns>
+        public Result Convert( SSPJImporter.Information projectInformation,
+                SSAEImporter.Information animationData,
+                List<CellMap> cellMaps,
+                Dictionary<types.AlphaBlendType, Material> materials )
         {
             List<GameObject> results = new List<GameObject>( animationData.animations.Count );
 
@@ -55,7 +66,11 @@ namespace a.spritestudio.editor
                                 p.transform.SetParent( partsObjects[part.parent].transform, false );
                             }
                             partsObjects.Add( part.index, p );
-                            sp.Setup( root, part.type );
+
+                            // パーツの初期化
+                            Material material;
+                            materials.TryGetValue( part.blendType, out material );
+                            sp.Setup( root, part.type, material );
 
                             // このパーツに対するアニメーションを探す
                             foreach ( var a in anime.parts ) {
