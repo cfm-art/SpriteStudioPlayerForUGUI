@@ -9,6 +9,22 @@
         private class Value
             : SpriteAttribute.ValueBase
         {
+            public float[] lt;
+            public float[] rt;
+            public float[] lb;
+            public float[] rb;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="part"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override spritestudio.attribute.AttributeBase CreateKeyFrame( SpritePart part, SpriteAttribute.ValueBase value )
+        {
+            Value v = (Value) value;
+            return spritestudio.attribute.VertexUpdater.Create( v.lt, v.rt, v.lb, v.rb );
         }
 
         /// <summary>
@@ -19,7 +35,12 @@
         /// <returns></returns>
         protected override SpriteAttribute.ValueBase CraeteValue( xml.NodeReader key, xml.NodeReader node )
         {
-            throw new System.NotImplementedException();
+            return new Value() {
+                lt = node.AtFloats( "RT", ' ' ),
+                rt = node.AtFloats( "LT", ' ' ),
+                lb = node.AtFloats( "LB", ' ' ),
+                rb = node.AtFloats( "RB", ' ' ),
+            };
         }
     }
 }

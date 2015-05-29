@@ -1,25 +1,17 @@
 ﻿namespace a.spritestudio.editor.attribute
 {
+    /// <summary>
+    ///  S  T  U  V
+    /// SX SY TX TY
+    /// </summary>
     public class UVSY
-        : SpriteAttribute
+        : BasicSingleFloatAttribute
     {
-        /// <summary>
-        /// キーフレームの中身
-        /// </summary>
-        private class Value
-            : SpriteAttribute.ValueBase
+        public override spritestudio.attribute.AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
         {
-        }
-
-        /// <summary>
-        /// キーフレーム生成
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        protected override SpriteAttribute.ValueBase CraeteValue( xml.NodeReader key, xml.NodeReader node )
-        {
-            throw new System.NotImplementedException();
+            Value v = (Value) value;
+            return spritestudio.attribute.TextureCoordUpdater.Create(
+                    spritestudio.attribute.TextureCoordUpdater.kTargetT, v.value );
         }
     }
 }

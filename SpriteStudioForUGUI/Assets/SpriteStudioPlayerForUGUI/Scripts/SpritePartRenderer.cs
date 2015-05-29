@@ -122,6 +122,66 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// 頂点変換
+        /// </summary>
+        /// <param name="leftTop"></param>
+        /// <param name="rightTop"></param>
+        /// <param name="leftBottom"></param>
+        /// <param name="rightBottom"></param>
+        public void UpdateVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
+        {
+            UpdatePosition( 0, leftBottom );
+            UpdatePosition( 1, leftTop );
+            UpdatePosition( 2, rightTop );
+            UpdatePosition( 3, rightBottom );
+            SetVerticesDirty();
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordS( float value )
+        {
+            uv_[kS] = value;
+            UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] ) );
+            UpdateTextureCoord( 1, new Vector2( uv_[kS], uv_[kV] ) );
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordT( float value )
+        {
+            uv_[kT] = value;
+            UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] ) );
+            UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] ) );
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordU( float value )
+        {
+            uv_[kU] = value;
+            UpdateTextureCoord( 2, new Vector2( uv_[kU], uv_[kV] ) );
+            UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] ) );
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordV( float value )
+        {
+            uv_[kV] = value;
+            UpdateTextureCoord( 1, new Vector2( uv_[kS], uv_[kV] ) );
+            UpdateTextureCoord( 2, new Vector2( uv_[kU], uv_[kV] ) );
+        }
+
+        /// <summary>
         /// セルマップの取得・更新
         /// </summary>
         public CellMap CellMap

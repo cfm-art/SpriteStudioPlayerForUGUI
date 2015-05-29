@@ -135,6 +135,64 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// 頂点変換
+        /// </summary>
+        /// <param name="leftTop"></param>
+        /// <param name="rightTop"></param>
+        /// <param name="leftBottom"></param>
+        /// <param name="rightBottom"></param>
+        public void UpdateVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
+        {
+            if ( renderer_ != null ) {
+                renderer_.UpdateVertices( leftTop, rightTop, leftBottom, rightBottom );
+            }
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordS( float value )
+        {
+            if ( renderer_ != null ) {
+                renderer_.UpdateTexCoordS( value );
+            }
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordT( float value )
+        {
+            if ( renderer_ != null ) {
+                renderer_.UpdateTexCoordT( value );
+            }
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordU( float value )
+        {
+            if ( renderer_ != null ) {
+                renderer_.UpdateTexCoordU( value );
+            }
+        }
+
+        /// <summary>
+        /// UV更新
+        /// </summary>
+        /// <param name="value"></param>
+        public void UpdateTexCoordV( float value )
+        {
+            if ( renderer_ != null ) {
+                renderer_.UpdateTexCoordV( value );
+            }
+        }
+
+        /// <summary>
         /// キーフレームの追加
         /// </summary>
         /// <param name="frame"></param>

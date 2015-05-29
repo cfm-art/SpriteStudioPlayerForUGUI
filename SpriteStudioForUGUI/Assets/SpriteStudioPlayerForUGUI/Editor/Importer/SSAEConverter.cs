@@ -37,6 +37,9 @@ namespace a.spritestudio.editor
                     var cellName = System.IO.Path.GetFileNameWithoutExtension( cell );
                     var found = cellMaps.Find( ( o ) => o.name == cellName );
                     if ( found == null ) {
+                        foreach ( var o in cellMaps ) {
+                            UnityEngine.Debug.Log( o.name );
+                        }
                         throw new System.ArgumentException( "Cell '" + cell + "' dose not find." );
                     }
                     Tracer.Log( found );

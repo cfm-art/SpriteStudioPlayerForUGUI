@@ -82,7 +82,7 @@ namespace a.spritestudio.editor
             xml.Load( fileName );
 
             // 基本設定
-            string name = NodeReader.findFirst( xml, "SpriteStudioCellMap/name" ).AtText();
+            string name = System.IO.Path.GetFileNameWithoutExtension( fileName ); // NodeReader.findFirst( xml, "SpriteStudioCellMap/name" ).AtText();
             string imagePath = NodeReader.findFirst( xml, "SpriteStudioCellMap/imagePath" ).AtText();
             string wrapMode = NodeReader.findFirst( xml, "SpriteStudioCellMap/wrapMode" ).AtText();
             string filterMode = NodeReader.findFirst( xml, "SpriteStudioCellMap/filterMode" ).AtText();

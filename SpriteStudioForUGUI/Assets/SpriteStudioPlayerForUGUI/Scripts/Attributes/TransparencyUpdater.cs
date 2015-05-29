@@ -24,7 +24,10 @@ namespace a.spritestudio.attribute
         /// <param name="part"></param>
         public static void OnUpdate( SpritePart part, AttributeBase attribute )
         {
-            part.Renderer.canvasRenderer.SetAlpha( attribute.@float( 0 ) );
+            // TODO: 親の透明度を子に波及させる。
+            if ( part.Renderer != null ) {
+                part.Renderer.canvasRenderer.SetAlpha( attribute.@float( 0 ) );
+            }
         }
     }
 }

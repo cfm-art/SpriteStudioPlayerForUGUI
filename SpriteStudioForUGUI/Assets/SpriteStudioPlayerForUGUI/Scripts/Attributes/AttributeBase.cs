@@ -31,6 +31,13 @@ namespace a.spritestudio.attribute
             kTransparency,
             kVisibility,
             kUserNotify,
+            kVertex,
+            kUVS,
+            kUVT,
+            kUVU,
+            kUVV,
+            kSizeX,
+            kSizeY,
         }
 
         /// <summary>
@@ -53,6 +60,13 @@ namespace a.spritestudio.attribute
             TransparencyUpdater.OnUpdate,
             VisibilityUpdater.OnUpdate,
             UserDataNotifier.OnUpdate,
+            VertexUpdater.OnUpdate,
+            TextureCoordUpdater.OnUpdateS,
+            TextureCoordUpdater.OnUpdateT,
+            TextureCoordUpdater.OnUpdateU,
+            TextureCoordUpdater.OnUpdateV,
+            SizeUpdater.OnUpdateX,
+            SizeUpdater.OnUpdateY,
         };
 
         /// <summary>
