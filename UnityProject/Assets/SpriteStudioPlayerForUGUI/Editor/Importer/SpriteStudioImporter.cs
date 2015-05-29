@@ -51,7 +51,6 @@ namespace a.spritestudio.editor
 
             // インポート用ツール生成
             SSPJImportTool tool = SSPJImportTool.Create( Path.GetFileNameWithoutExtension( file ) );
-            AssetDatabase.CreateAsset( tool, file + ".asset" );
 
             // sspjのインポート
             var projectInformation = new SSPJImporter().Import( file );
@@ -72,7 +71,7 @@ namespace a.spritestudio.editor
                 }
             }
 
-            EditorUtility.SetDirty( tool );
+            AssetDatabase.CreateAsset( tool, file + ".asset" );
         }
 
         /// <summary>
@@ -83,13 +82,12 @@ namespace a.spritestudio.editor
         internal static void Import( string file, SSPJImportTool.TargetAnimation[] targets )
         {
             // TODO: 出力先は自由に出来るようにする
-            string exportPath = "Assets/Exports/";
+            string exportPath = MenuItems.ExportPath + Path.GetFileNameWithoutExtension( file ) + "/";
 
             string path = Path.GetDirectoryName( file );
 
             // インポート用ツール生成
-            SSPJImportTool tool = SSPJImportTool.Create( Path.GetFileNameWithoutExtension( file ) );
-            AssetDatabase.CreateAsset( tool, file + ".asset" );
+            SSPJImportTool tool = targets == null ? SSPJImportTool.Create( Path.GetFileNameWithoutExtension( file ) ) : null;
 
             // マテリアル
             Dictionary<types.AlphaBlendType, Material> materials = new Dictionary<types.AlphaBlendType, Material>() {
@@ -114,7 +112,9 @@ namespace a.spritestudio.editor
                 var converter = new SSCEConverter();
                 cellMap.Add( converter.Convert( path + '\\', ssceInformation ) );
 
-                tool.AddCell( Path.GetFileNameWithoutExtension( cell ) );
+                if ( tool != null ) {
+                    tool.AddCell( Path.GetFileNameWithoutExtension( cell ) );
+                }
             }
             
             // セルマップの保存
@@ -138,7 +138,7 @@ namespace a.spritestudio.editor
             // ssaeのインポート
             List<GameObject> prefabs = new List<GameObject>();
             try {
-                string basePath = exportPath + "Sprites/" + Path.GetFileNameWithoutExtension( file );
+                string basePath = exportPath + "Sprites/";
                 foreach ( var animation in projectInformation.animePacks ) {
                     var ssceName = Path.GetFileNameWithoutExtension( animation );
                     if ( targets != null ) {
@@ -158,9 +158,9 @@ namespace a.spritestudio.editor
 
                     // prefab保存
                     string name = Path.GetFileNameWithoutExtension( animation );
-                    CreateFolders( basePath + "/" + name );
+                    CreateFolders( basePath + name );
                     foreach ( var prefab in result.animations ) {
-                        string fileName = basePath + "/" + name + "/" + prefab.name + ".prefab";
+                        string fileName = basePath + name + "/" + prefab.name + ".prefab";
                         var savedPrefab = AssetDatabase.LoadAssetAtPath( fileName, typeof( GameObject ) );
                         if ( savedPrefab == null ) {
                             PrefabUtility.CreatePrefab( fileName, prefab );
@@ -171,8 +171,13 @@ namespace a.spritestudio.editor
 
                         Tracer.Log( "Save Prefab:" + fileName );
 
-                        tool.AddAnimation( name, prefab.name );
+                        if ( tool != null ) {
+                            tool.AddAnimation( name, prefab.name );
+                        }
                     }
+                }
+                if ( tool != null ) {
+                    AssetDatabase.CreateAsset( tool, file + ".asset" );
                 }
             } finally {
                 // ヒエラルキーにGOが残らないようにする
@@ -181,7 +186,6 @@ namespace a.spritestudio.editor
                         GameObject.DestroyImmediate( p );
                     }
                 }
-                EditorUtility.SetDirty( tool );
                 AssetDatabase.SaveAssets();
             }
         }
@@ -192,7 +196,10 @@ namespace a.spritestudio.editor
         /// <param name="path"></param>
         public static void CreateFolders( string path )
         {
-            Directory.CreateDirectory( path );
+            if ( !Directory.Exists( path ) ) {
+                Directory.CreateDirectory( path );
+                AssetDatabase.ImportAsset( path );
+            }
         }
     }
 }

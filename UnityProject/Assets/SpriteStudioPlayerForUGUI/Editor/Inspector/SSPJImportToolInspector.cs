@@ -25,6 +25,7 @@ namespace a.spritestudio.editor.inspector
                 return;
             }
             GUILayout.Label( tool.name + " のインポート" );
+            GUILayout.Label( "出力先：" + MenuItems.ExportPath );
 
             // セルマップ
             GUILayout.Label( "セルマップ" );
@@ -70,6 +71,10 @@ namespace a.spritestudio.editor.inspector
                     }
                 }
                 GUILayout.Space( 12 );
+            }
+
+            if ( GUI.changed ) {
+                EditorUtility.SetDirty( tool );
             }
 
             // インポートボタン

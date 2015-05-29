@@ -14,6 +14,7 @@ namespace a.spritestudio.editor
         {
             kAutoImport,
             kImportLog,
+            kSetExportPath,
         }
 
         #region 自動インポートの設定
@@ -129,6 +130,42 @@ namespace a.spritestudio.editor
         public static bool IsValidDisableImportLog()
         {
             return ImportLog;
+        }
+        #endregion
+
+        #region 出力先の指定
+        /// <summary>
+        /// 初期の出力先
+        /// </summary>
+        private const string kDefaultPath = "Assets/Exports/";
+
+        /// <summary>
+        /// 出力先
+        /// </summary>
+        public static string ExportPath
+        {
+            get
+            {
+                string path = EditorPrefs.GetString( "assfugui-ep", kDefaultPath );
+                if ( path.Length == 0 || path[path.Length - 1] != '/' ) {
+                    path = path + '/';
+                }
+                return path;
+            }
+            set { EditorPrefs.SetString( "assfugui-ep", value ); }
+        }
+
+        /// <summary>
+        /// 出力先の指定
+        /// </summary>
+        [MenuItem( "SpriteStudioForUGUI/出力先の設定", false, (int) Order.kSetExportPath )]
+        public static void SetExportPath()
+        {
+            string result = EditorUtility.OpenFolderPanel( "出力先", ExportPath, "" );
+            if ( result != null ) {
+                ExportPath = UnityEditor.FileUtil.GetProjectRelativePath( result );
+                Selection.activeObject = null;
+            }
         }
         #endregion
     }
