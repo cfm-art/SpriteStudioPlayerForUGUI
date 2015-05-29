@@ -1,9 +1,9 @@
-/Library
-/obj
-/Temp
-/*.csproj
-/*.sln
-/*.suo
-/Assets/SampleData/
-/Assets/SampleData.meta
+/UnityProject/Library
+/UnityProject/obj
+/UnityProject/Temp
+/UnityProject/*.csproj
+/UnityProject/*.sln
+/UnityProject/*.suo
+/UnityProject/Assets/SampleData/
+/UnityProject/Assets/SampleData.meta
 
