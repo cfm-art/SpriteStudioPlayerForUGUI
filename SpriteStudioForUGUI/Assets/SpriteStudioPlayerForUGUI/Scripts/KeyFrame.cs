@@ -31,6 +31,14 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// キーが1つ以上あるか
+        /// </summary>
+        public bool HasKey
+        {
+            get { return attributes_ != null && attributes_.Count > 0; }
+        }
+
+        /// <summary>
         /// 追加
         /// </summary>
         /// <param name="attribute"></param>

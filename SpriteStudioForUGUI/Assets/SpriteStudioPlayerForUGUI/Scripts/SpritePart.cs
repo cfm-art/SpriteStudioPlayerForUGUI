@@ -47,6 +47,16 @@ namespace a.spritestudio
         private int oldFrame_;
 
         /// <summary>
+        /// 更新有無
+        /// </summary>
+        private bool isUpdate_;
+
+        /// <summary>
+        /// 不透明度
+        /// </summary>
+        private float alpha_ = 1;
+
+        /// <summary>
         /// GOの初期化時
         /// </summary>
         void Start()
@@ -214,6 +224,7 @@ namespace a.spritestudio
         /// <param name="frame"></param>
         public void SetFrame( int frame )
         {
+            isUpdate_ = false;
             try {
                 if ( root_.IsReverse ) {
                     // 逆再生
@@ -222,6 +233,7 @@ namespace a.spritestudio
                     }
                     for ( int f = oldFrame_ - 1; f >= frame; --f ) {
                         KeyFrame attributes = keyFrames_[f];
+                        isUpdate_ |= attributes.HasKey;
                         foreach ( var attribute in attributes ) {
                             attribute.Do( this );
                         }
@@ -233,7 +245,7 @@ namespace a.spritestudio
                     }
                     for ( int f = oldFrame_ + 1; f <= frame; ++f ) {
                         KeyFrame attributes = keyFrames_[frame];
-
+                        isUpdate_ |= attributes.HasKey;
                         foreach ( var attribute in attributes ) {
                             attribute.Do( this );
                         }
@@ -245,8 +257,59 @@ namespace a.spritestudio
             }
 
             oldFrame_ = frame;
+        }
 
-            UpdateTransform();
+        /// <summary>
+        /// Transformの更新
+        /// </summary>
+        void LateUpdate()
+        {
+            if ( IsUpdate ) {
+                if ( renderer_ != null ) {
+                    renderer_.canvasRenderer.SetAlpha( Alpha );
+                }
+                UpdateTransform();
+            }
+        }
+
+        /// <summary>
+        /// 更新有無
+        /// </summary>
+        public bool IsUpdate
+        {
+            get
+            {
+                var parent = Parent;
+                return isUpdate_ || (parent != null && parent.IsUpdate);
+            }
+        }
+
+        /// <summary>
+        /// 親ノード
+        /// </summary>
+        public SpritePart Parent
+        {
+            get
+            {
+                return transform.parent.GetComponent<SpritePart>();
+            }
+        }
+
+        /// <summary>
+        /// 不透明度
+        /// </summary>
+        public float Alpha
+        {
+            get
+            {
+                var parent = Parent;
+                return alpha_ * (parent != null ? parent.Alpha : 1);
+            }
+
+            set
+            {
+                alpha_ = value;
+            }
         }
 
         /// <summary>
