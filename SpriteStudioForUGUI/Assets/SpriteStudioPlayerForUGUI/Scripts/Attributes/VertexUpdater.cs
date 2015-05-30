@@ -39,7 +39,7 @@ namespace a.spritestudio.attribute
             Vector2 lb = new Vector2( attribute.@float( 4 ), attribute.@float( 5 ) );
             Vector2 rb = new Vector2( attribute.@float( 6 ), attribute.@float( 7 ) );
 
-            part.UpdateVertices( lt, rt, lb, rb );
+            part.TransformVertices( lt, rt, lb, rb );
         }
     }
 }

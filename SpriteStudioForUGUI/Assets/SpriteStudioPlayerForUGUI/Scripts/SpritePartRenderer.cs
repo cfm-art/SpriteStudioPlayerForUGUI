@@ -128,12 +128,18 @@ namespace a.spritestudio
         /// <param name="rightTop"></param>
         /// <param name="leftBottom"></param>
         /// <param name="rightBottom"></param>
-        public void UpdateVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
+        public void TransformVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
         {
-            UpdatePosition( 0, leftBottom );
-            UpdatePosition( 1, leftTop );
-            UpdatePosition( 2, rightTop );
-            UpdatePosition( 3, rightBottom );
+            Debug.Log( position_ + "/" + Utility.AppendXY( position_, leftBottom ) );
+            Debug.Log( Utility.AppendY( position_, size_ ) + "/" + Utility.AppendXY( Utility.AppendY( position_, size_ ), leftTop ) );
+            Debug.Log( Utility.AppendXY( position_, size_ ) + "/" + Utility.AppendXY( Utility.AppendXY( position_, size_ ), rightTop ) );
+            Debug.Log( Utility.AppendX( position_, size_ ) + "/" + Utility.AppendXY( Utility.AppendX( position_, size_ ), rightBottom ) );
+
+            UpdatePosition( 0, Utility.AppendXY( position_, leftBottom ) );
+            UpdatePosition( 1, Utility.AppendXY( Utility.AppendY( position_, size_ ), leftTop ) );
+            UpdatePosition( 2, Utility.AppendXY( Utility.AppendXY( position_, size_ ), rightTop ) );
+            UpdatePosition( 3, Utility.AppendXY( Utility.AppendX( position_, size_ ), rightBottom ) );
+
             SetVerticesDirty();
         }
 
@@ -285,7 +291,7 @@ namespace a.spritestudio
         protected override void OnFillVBO( List<UIVertex> vbo )
         {
             if ( vertices_ != null ) {
-                UpdateVertices( false );
+                //UpdateVertices( false );
                 vbo.AddRange( vertices_ );
             } else {
                 SetupVertices();

@@ -36,8 +36,8 @@
         protected override SpriteAttribute.ValueBase CraeteValue( xml.NodeReader key, xml.NodeReader node )
         {
             return new Value() {
-                lt = node.AtFloats( "RT", ' ' ),
-                rt = node.AtFloats( "LT", ' ' ),
+                lt = node.AtFloats( "LT", ' ' ),
+                rt = node.AtFloats( "RT", ' ' ),
                 lb = node.AtFloats( "LB", ' ' ),
                 rb = node.AtFloats( "RB", ' ' ),
             };

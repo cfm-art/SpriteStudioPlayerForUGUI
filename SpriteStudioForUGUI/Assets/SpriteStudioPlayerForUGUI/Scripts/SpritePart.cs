@@ -141,10 +141,11 @@ namespace a.spritestudio
         /// <param name="rightTop"></param>
         /// <param name="leftBottom"></param>
         /// <param name="rightBottom"></param>
-        public void UpdateVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
+        public void TransformVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
         {
+            Debug.Log( "TransformVertices:" + leftTop + "," + rightTop + "," + leftBottom + "," + rightBottom );
             if ( renderer_ != null ) {
-                renderer_.UpdateVertices( leftTop, rightTop, leftBottom, rightBottom );
+                renderer_.TransformVertices( leftTop, rightTop, leftBottom, rightBottom );
             }
         }
 
