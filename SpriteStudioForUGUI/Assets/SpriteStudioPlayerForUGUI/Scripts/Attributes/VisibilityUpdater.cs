@@ -24,7 +24,7 @@ namespace a.spritestudio.attribute
         /// <param name="part"></param>
         public static void OnUpdate( SpritePart part, AttributeBase attribute )
         {
-            part.gameObject.SetActive( attribute.@bool( 0 ) );
+            part.IsVisible = attribute.@bool( 0 );
         }
     }
 }

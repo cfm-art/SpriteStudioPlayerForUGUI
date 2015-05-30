@@ -57,6 +57,11 @@ namespace a.spritestudio
         private float alpha_ = 1;
 
         /// <summary>
+        /// 可視状態
+        /// </summary>
+        private bool isVisible_;
+
+        /// <summary>
         /// GOの初期化時
         /// </summary>
         void Start()
@@ -153,7 +158,6 @@ namespace a.spritestudio
         /// <param name="rightBottom"></param>
         public void TransformVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
         {
-            Debug.Log( "TransformVertices:" + leftTop + "," + rightTop + "," + leftBottom + "," + rightBottom );
             if ( renderer_ != null ) {
                 renderer_.TransformVertices( leftTop, rightTop, leftBottom, rightBottom );
             }
@@ -267,6 +271,7 @@ namespace a.spritestudio
             if ( IsUpdate ) {
                 if ( renderer_ != null ) {
                     renderer_.canvasRenderer.SetAlpha( Alpha );
+                    renderer_.gameObject.SetActive( IsVisible );
                 }
                 UpdateTransform();
             }
@@ -309,6 +314,23 @@ namespace a.spritestudio
             set
             {
                 alpha_ = value;
+            }
+        }
+
+        /// <summary>
+        /// 可視状態
+        /// </summary>
+        public bool IsVisible
+        {
+            get
+            {
+                var parent = Parent;
+                return isVisible_ && (parent == null || parent.IsVisible);
+            }
+
+            set
+            {
+                isVisible_ = value;
             }
         }
 

@@ -91,10 +91,10 @@ namespace a.spritestudio.editor
 
             // マテリアル
             Dictionary<types.AlphaBlendType, Material> materials = new Dictionary<types.AlphaBlendType, Material>() {
-                { types.AlphaBlendType.kAdd, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Add.mat", typeof( Material ) ) as Material },
-                { types.AlphaBlendType.kMix, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Mix.mat", typeof( Material ) ) as Material },
-                { types.AlphaBlendType.kMul, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Mul.mat", typeof( Material ) ) as Material },
-                { types.AlphaBlendType.kSub, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayer/Materials/Sub.mat", typeof( Material ) ) as Material },
+                { types.AlphaBlendType.kAdd, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayerForUGUI/Materials/Add.mat", typeof( Material ) ) as Material },
+                { types.AlphaBlendType.kMix, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayerForUGUI/Materials/Mix.mat", typeof( Material ) ) as Material },
+                { types.AlphaBlendType.kMul, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayerForUGUI/Materials/Mul.mat", typeof( Material ) ) as Material },
+                { types.AlphaBlendType.kSub, AssetDatabase.LoadAssetAtPath( "Assets/SpriteStudioPlayerForUGUI/Materials/Sub.mat", typeof( Material ) ) as Material },
             };
 
             // sspjのインポート

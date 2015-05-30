@@ -72,6 +72,12 @@ namespace a.spritestudio
         private GameObject spriteHolder_;
 
         /// <summary>
+        /// マテリアル
+        /// </summary>
+        [SerializeField]
+        private List<Material> materials_;
+
+        /// <summary>
         /// パーツ
         /// </summary>
         private Dictionary<string, SpritePart> parts_;

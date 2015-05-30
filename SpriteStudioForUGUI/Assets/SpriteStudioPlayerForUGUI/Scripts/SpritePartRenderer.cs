@@ -47,10 +47,22 @@ namespace a.spritestudio
         private Vector4 uv_;
 
         /// <summary>
+        /// 追加分
+        /// </summary>
+        [SerializeField]
+        private Vector4 appendUv_;
+
+        /// <summary>
         /// セルマップ
         /// </summary>
         [SerializeField]
         private CellMap cellMap_;
+
+        /// <summary>
+        /// セル内の矩形の指定
+        /// </summary>
+        [SerializeField]
+        private int cellIndex_;
 
         /// <summary>
         /// 優先度
@@ -94,6 +106,7 @@ namespace a.spritestudio
         protected override void Start()
         {
             base.Start();
+            appendUv_ = Vector2.zero;
             SetupVertices();
             UpdateVertices();
         }
@@ -130,11 +143,6 @@ namespace a.spritestudio
         /// <param name="rightBottom"></param>
         public void TransformVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
         {
-            Debug.Log( position_ + "/" + Utility.AppendXY( position_, leftBottom ) );
-            Debug.Log( Utility.AppendY( position_, size_ ) + "/" + Utility.AppendXY( Utility.AppendY( position_, size_ ), leftTop ) );
-            Debug.Log( Utility.AppendXY( position_, size_ ) + "/" + Utility.AppendXY( Utility.AppendXY( position_, size_ ), rightTop ) );
-            Debug.Log( Utility.AppendX( position_, size_ ) + "/" + Utility.AppendXY( Utility.AppendX( position_, size_ ), rightBottom ) );
-
             UpdatePosition( 0, Utility.AppendXY( position_, leftBottom ) );
             UpdatePosition( 1, Utility.AppendXY( Utility.AppendY( position_, size_ ), leftTop ) );
             UpdatePosition( 2, Utility.AppendXY( Utility.AppendXY( position_, size_ ), rightTop ) );
@@ -149,9 +157,10 @@ namespace a.spritestudio
         /// <param name="value"></param>
         public void UpdateTexCoordS( float value )
         {
-            uv_[kS] = value;
-            UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] ) );
-            UpdateTextureCoord( 1, new Vector2( uv_[kS], uv_[kV] ) );
+            Debug.Log( "UpdateTexCoordS" + value );
+            //appendUv_[kS] = value;
+            //UpdateTextureCoord( 0, new Vector2( uv_[kS] + value, uv_[kT] ) );
+            //UpdateTextureCoord( 1, new Vector2( uv_[kS] + value, uv_[kV] ) );
         }
 
         /// <summary>
@@ -160,9 +169,10 @@ namespace a.spritestudio
         /// <param name="value"></param>
         public void UpdateTexCoordT( float value )
         {
-            uv_[kT] = value;
-            UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] ) );
-            UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] ) );
+            Debug.Log( "UpdateTexCoordT" + value );
+            //appendUv_[kT] = value;
+            //UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] + value ) );
+            //UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] + value ) );
         }
 
         /// <summary>
@@ -171,9 +181,9 @@ namespace a.spritestudio
         /// <param name="value"></param>
         public void UpdateTexCoordU( float value )
         {
-            uv_[kU] = value;
-            UpdateTextureCoord( 2, new Vector2( uv_[kU], uv_[kV] ) );
-            UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] ) );
+            appendUv_[kS] = value;
+            appendUv_[kU] = value;
+            UpdateTextureCoords();
         }
 
         /// <summary>
@@ -182,9 +192,9 @@ namespace a.spritestudio
         /// <param name="value"></param>
         public void UpdateTexCoordV( float value )
         {
-            uv_[kV] = value;
-            UpdateTextureCoord( 1, new Vector2( uv_[kS], uv_[kV] ) );
-            UpdateTextureCoord( 2, new Vector2( uv_[kU], uv_[kV] ) );
+            appendUv_[kT] = -value;
+            appendUv_[kV] = -value;
+            UpdateTextureCoords();
         }
 
         /// <summary>
@@ -203,6 +213,7 @@ namespace a.spritestudio
         public void SetCellMap( int index, int mapIndex )
         {
             cellMap_ = part_.Root.CellMap( index );
+            cellIndex_ = mapIndex;
 
             // UV
             size_ = new Vector2( cellMap_.Width( mapIndex ), cellMap_.Height( mapIndex ) );
@@ -251,10 +262,11 @@ namespace a.spritestudio
         /// <param name="isDirty"></param>
         private void UpdateTextureCoords( bool isDirty = true )
         {
-            UpdateTextureCoord( 0, new Vector2( uv_[kS], uv_[kT] ) );
-            UpdateTextureCoord( 1, new Vector2( uv_[kS], uv_[kV] ) );
-            UpdateTextureCoord( 2, new Vector2( uv_[kU], uv_[kV] ) );
-            UpdateTextureCoord( 3, new Vector2( uv_[kU], uv_[kT] ) );
+            Vector4 uv = uv_ + appendUv_;
+            UpdateTextureCoord( 0, new Vector2( uv[kS], uv[kT] ) );
+            UpdateTextureCoord( 1, new Vector2( uv[kS], uv[kV] ) );
+            UpdateTextureCoord( 2, new Vector2( uv[kU], uv[kV] ) );
+            UpdateTextureCoord( 3, new Vector2( uv[kU], uv[kT] ) );
             if ( isDirty ) {
                 SetVerticesDirty();
             }
