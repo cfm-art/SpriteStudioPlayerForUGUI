@@ -9,7 +9,10 @@
         private class Value
             : SpriteAttribute.ValueBase
         {
-            public string value;
+            public float[] point;
+            public float[] rect;
+            public int? integer;
+            public string text;
         }
 
         /// <summary>
@@ -20,8 +23,16 @@
         /// <returns></returns>
         protected override SpriteAttribute.ValueBase CraeteValue( xml.NodeReader key, xml.NodeReader node )
         {
+            var integer = node.ChildOrNull( "integer" );
+            var @string = node.ChildOrNull( "string" );
+            var rect = node.ChildOrNull( "rect" );
+            var point = node.ChildOrNull( "point" );
+
             return new Value() {
-                value = node.AtText(),
+                point = point != null ? point.AtFloats( ' ' ) : null,
+                rect = rect != null ? rect.AtFloats( ' ' ) : null,
+                integer = integer != null ? (int?) integer.AtInteger() : null,
+                text = @string != null ? @string.AtText() : null,
             };
         }
 
@@ -45,7 +56,7 @@
         public override spritestudio.attribute.AttributeBase CreateKeyFrame( SpritePart part, ValueBase value )
         {
             Value v = (Value) value;
-            return spritestudio.attribute.UserDataNotifier.Create( v.value );
+            return spritestudio.attribute.UserDataNotifier.Create( v.integer, v.point, v.rect, v.text );
         }
     }
 }

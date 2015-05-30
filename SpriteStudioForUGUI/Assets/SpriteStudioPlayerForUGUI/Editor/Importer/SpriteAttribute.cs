@@ -141,7 +141,11 @@ namespace a.spritestudio.editor
                 }
             }
             // 最終フレームは入れておく
-            results[totalFrames - 1] = results[finalIndex];
+            if ( GetType().Name == "USER" ) {
+                // ユーザーデータは最終フレームにコピーしない
+            } else {
+                results[totalFrames - 1] = results[finalIndex];
+            }
 
             // 同一数値のキーを間引く
             for ( int i = 0; i < results.Count - 2; ++i ) {

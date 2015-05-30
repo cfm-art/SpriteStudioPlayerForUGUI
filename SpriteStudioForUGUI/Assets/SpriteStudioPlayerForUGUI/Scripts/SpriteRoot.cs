@@ -101,7 +101,7 @@ namespace a.spritestudio
         /// <summary>
         /// ユーザー定義の通知
         /// </summary>
-        public event System.Action<SpriteRoot, SpritePart, string> OnUserData;
+        public event System.Action<SpriteRoot, SpritePart, attribute.UserDataNotifier.UserData> OnUserData;
 
         /// <summary>
         /// 開始
@@ -115,14 +115,6 @@ namespace a.spritestudio
             }
             parts_ = new Dictionary<string, SpritePart>();
             UpdatePriority();
-
-            // イベント用意
-            if ( OnComplete == null ) {
-                OnComplete = delegate { };
-            }
-            if ( OnUserData == null ) {
-                OnUserData = delegate { };
-            }
         }
 
         /// <summary>
@@ -229,7 +221,9 @@ namespace a.spritestudio
                     } else {
                         frame_ = 0;
                     }
-                    OnComplete( this );
+                    if ( OnComplete != null ) {
+                        OnComplete( this );
+                    }
                 }
                 if ( frame_ >= totalFrames_ ) { frame_ = totalFrames_ - 1; }
             } else {
@@ -243,7 +237,9 @@ namespace a.spritestudio
                     } else {
                         frame_ = totalFrames_ - 1;
                     }
-                    OnComplete( this );
+                    if ( OnComplete != null ) {
+                        OnComplete( this );
+                    }
                 }
                 if ( frame_ < 0 ) { frame_ = 0; }
             }
@@ -297,9 +293,11 @@ namespace a.spritestudio
         /// </summary>
         /// <param name="part"></param>
         /// <param name="message"></param>
-        public void NotifyUserData( SpritePart part, string message )
+        public void NotifyUserData( SpritePart part, attribute.UserDataNotifier.UserData data )
         {
-            OnUserData( this, part, message );
+            if ( OnUserData != null ) {
+                OnUserData( this, part, data );
+            }
         }
 
         /// <summary>

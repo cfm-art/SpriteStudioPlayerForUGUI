@@ -239,7 +239,7 @@ namespace a.spritestudio
                     }
                 }
             } catch {
-                Debug.LogError( "out of range:" + keyFrames_.Length + "/" + frame );
+                Debug.LogError( "error occurs at:" + keyFrames_.Length + "/" + frame );
                 throw;
             }
 

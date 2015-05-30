@@ -113,6 +113,7 @@ namespace a.spritestudio.attribute
             intValues_ = intValue;
             floatValues_ = floatValue;
             boolValues_ = boolValue;
+            stringValues_ = stringValue;
         }
 
         /// <summary>
