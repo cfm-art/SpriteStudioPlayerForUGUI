@@ -1,9 +1,22 @@
-SpriteStudioPlayer
+SpriteStudioPlayerForUGUI
 ==================
 
 SpriteStudioのデータをUnityのuGUIで再生するためのライブラリを開発中です。
-まだ、結構未実装部分あります。
+まだ、<strong>結構未実装部分あります</strong>。
+気が向いたときに順次実装してます。
 
+
+Pull Request
+==
+基本的に歓迎です。
+要望等も(実装するかは分かりませんが)受け付けてます。
+適当にフォークして改造してもらっても一向に構いません。
+
+
+ライセンス
+==
+ほぼBSDです。
+License.txtを見てください。
 
 
 インポート方法
