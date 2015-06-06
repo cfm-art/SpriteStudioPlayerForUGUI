@@ -70,6 +70,11 @@ namespace a.spritestudio
         [SerializeField]
         private int priority_;
 
+        /// <summary>
+        /// 以前の色
+        /// </summary>
+        private Color oldColor_ = Color.white;
+
         public int Priority
         {
             get { return priority_; }
@@ -129,9 +134,11 @@ namespace a.spritestudio
         /// </summary>
         public void SetupVertices()
         {
-            vertices_ = new List<UIVertex>( new UIVertex[] {
-                UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert, UIVertex.simpleVert
-            } );
+            var v = UIVertex.simpleVert;
+            v.color = color;
+
+            vertices_ = new List<UIVertex>( new UIVertex[] { v, v, v, v } );
+            oldColor_ = color;
         }
 
         /// <summary>
@@ -143,12 +150,53 @@ namespace a.spritestudio
         /// <param name="rightBottom"></param>
         public void TransformVertices( Vector2 leftTop, Vector2 rightTop, Vector2 leftBottom, Vector2 rightBottom )
         {
-            UpdatePosition( 0, Utility.AppendXY( position_, leftBottom ) );
-            UpdatePosition( 1, Utility.AppendXY( Utility.AppendY( position_, size_ ), leftTop ) );
-            UpdatePosition( 2, Utility.AppendXY( Utility.AppendXY( position_, size_ ), rightTop ) );
-            UpdatePosition( 3, Utility.AppendXY( Utility.AppendX( position_, size_ ), rightBottom ) );
+            // テクスチャのひずみを減らすために4ポリゴンで
+            Vector3 v0 = Utility.AppendXY( position_, leftBottom );
+            Vector3 v1 = Utility.AppendXY( Utility.AppendY( position_, size_ ), leftTop );
+            Vector3 v2 = Utility.AppendXY( Utility.AppendXY( position_, size_ ), rightTop );
+            Vector3 v3 = Utility.AppendXY( Utility.AppendX( position_, size_ ), rightBottom );
+            Vector3 v4 = new Vector3( (v1.x + v2.x) * 0.5f, (v1.y + v2.y) * 0.5f, v1.z );
+            Vector3 v5 = new Vector3( (v1.x + v0.x) * 0.5f, (v1.y + v0.y) * 0.5f, v1.z );
+            Vector3 v7 = new Vector3( (v2.x + v3.x) * 0.5f, (v2.y + v3.y) * 0.5f, v1.z );
+            Vector3 v8 = new Vector3( (v0.x + v3.x) * 0.5f, (v0.y + v3.y) * 0.5f, v1.z );
+            Vector3 v6 = new Vector3( (v4.x + v8.x) * 0.5f, (v5.y + v7.y) * 0.5f, v1.z );
+            // v1 v4 v2
+            // v5 v6 v7
+            // v0 v8 v3
 
-            SetVerticesDirty();
+            if ( vertices_.Count == 4 ) {
+                for ( int i = 0; i < 3 * 4; ++i ) {
+                    vertices_.Add( UIVertex.simpleVert );
+                }
+            }
+            // 左下
+            UpdatePosition( 0, v0 );
+            UpdatePosition( 1, v5 );
+            UpdatePosition( 2, v6 );
+            UpdatePosition( 3, v8 );
+            // 左上
+            UpdatePosition( 4, v5 );
+            UpdatePosition( 5, v1 );
+            UpdatePosition( 6, v4 );
+            UpdatePosition( 7, v6 );
+            // 右上
+            UpdatePosition( 8, v6 );
+            UpdatePosition( 9, v4 );
+            UpdatePosition( 10, v2 );
+            UpdatePosition( 11, v7 );
+            // 右下
+            UpdatePosition( 12, v8 );
+            UpdatePosition( 13, v6 );
+            UpdatePosition( 14, v7 );
+            UpdatePosition( 15, v3 );
+
+            UpdateTextureCoords();
+
+            //UpdatePosition( 0, Utility.AppendXY( position_, leftBottom ) );
+            //UpdatePosition( 1, Utility.AppendXY( Utility.AppendY( position_, size_ ), leftTop ) );
+            //UpdatePosition( 2, Utility.AppendXY( Utility.AppendXY( position_, size_ ), rightTop ) );
+            //UpdatePosition( 3, Utility.AppendXY( Utility.AppendX( position_, size_ ), rightBottom ) );
+            //SetVerticesDirty();
         }
 
         /// <summary>
@@ -263,10 +311,47 @@ namespace a.spritestudio
         private void UpdateTextureCoords( bool isDirty = true )
         {
             Vector4 uv = uv_ + appendUv_;
-            UpdateTextureCoord( 0, new Vector2( uv[kS], uv[kT] ) );
-            UpdateTextureCoord( 1, new Vector2( uv[kS], uv[kV] ) );
-            UpdateTextureCoord( 2, new Vector2( uv[kU], uv[kV] ) );
-            UpdateTextureCoord( 3, new Vector2( uv[kU], uv[kT] ) );
+            if ( vertices_.Count == 4 ) {
+                UpdateTextureCoord( 0, new Vector2( uv[kS], uv[kT] ) );
+                UpdateTextureCoord( 1, new Vector2( uv[kS], uv[kV] ) );
+                UpdateTextureCoord( 2, new Vector2( uv[kU], uv[kV] ) );
+                UpdateTextureCoord( 3, new Vector2( uv[kU], uv[kT] ) );
+            } else {
+                // 4ポリの拡張版
+                // v1 v4 v2
+                // v5 v6 v7
+                // v0 v8 v3
+                Vector2 v0 = new Vector2( uv[kS], uv[kT] );
+                Vector2 v1 = new Vector2( uv[kS], uv[kV] );
+                Vector2 v2 = new Vector2( uv[kU], uv[kV] );
+                Vector2 v3 = new Vector2( uv[kU], uv[kT] );
+                Vector2 v4 = new Vector2( (v1.x + v2.x) * 0.5f, (v1.y + v2.y) * 0.5f );
+                Vector2 v5 = new Vector2( (v1.x + v0.x) * 0.5f, (v1.y + v0.y) * 0.5f );
+                Vector2 v7 = new Vector2( (v2.x + v3.x) * 0.5f, (v2.y + v3.y) * 0.5f );
+                Vector2 v8 = new Vector2( (v0.x + v3.x) * 0.5f, (v0.y + v3.y) * 0.5f );
+                Vector2 v6 = new Vector2( (v4.x + v8.x) * 0.5f, (v5.y + v7.y) * 0.5f );
+
+                // 左下
+                UpdateTextureCoord( 0, v0 );
+                UpdateTextureCoord( 1, v5 );
+                UpdateTextureCoord( 2, v6 );
+                UpdateTextureCoord( 3, v8 );
+                // 左上
+                UpdateTextureCoord( 4, v5 );
+                UpdateTextureCoord( 5, v1 );
+                UpdateTextureCoord( 6, v4 );
+                UpdateTextureCoord( 7, v6 );
+                // 右上
+                UpdateTextureCoord( 8, v6 );
+                UpdateTextureCoord( 9, v4 );
+                UpdateTextureCoord( 10, v2 );
+                UpdateTextureCoord( 11, v7 );
+                // 右下
+                UpdateTextureCoord( 12, v8 );
+                UpdateTextureCoord( 13, v6 );
+                UpdateTextureCoord( 14, v7 );
+                UpdateTextureCoord( 15, v3 );
+            }
             if ( isDirty ) {
                 SetVerticesDirty();
             }
@@ -303,6 +388,14 @@ namespace a.spritestudio
         protected override void OnFillVBO( List<UIVertex> vbo )
         {
             if ( vertices_ != null ) {
+                if ( oldColor_ != color ) {
+                    int count = vertices_.Count;
+                    for ( int i = 0; i < count; ++i ) {
+                        var v = vertices_[i];
+                        v.color = color;
+                        vertices_[i] = v;
+                    }
+                }
                 //UpdateVertices( false );
                 vbo.AddRange( vertices_ );
             } else {

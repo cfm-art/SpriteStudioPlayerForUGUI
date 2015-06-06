@@ -39,16 +39,24 @@ Shader "aSpriteStudio/Add"
 		ZWrite Off
 		ZTest [unity_GUIZTestMode]
 		Fog { Mode Off }
-		Blend SrcAlpha One
+		Blend SrcColor One, SrcAlpha One
 		ColorMask [_ColorMask]
 
 		Pass
 		{
 		CGPROGRAM
-			#pragma vertex vert
+			#pragma vertex vert_add
 			#pragma fragment frag
 			#include "UnityCG.cginc"
 			#include "Common.cginc"
+
+            v2f vert_add(appdata_t IN)
+            {
+                // XXX: ‚È‚º‚©’¸“_‚Ìƒ¿‚ª0.2ˆÊŒ¸‚Á‚Ä‚éŠ´‚¶‚ª‚·‚é
+	            v2f OUT = vert( IN );
+                OUT.color.rgb = OUT.color.rgb * (IN.color.a + 0.2);
+                return OUT;
+            }
 		ENDCG
 		}
 	}
