@@ -88,6 +88,12 @@ namespace a.spritestudio
         private bool requireUpdatePriority_;
 
         /// <summary>
+        /// パーツ一覧
+        /// </summary>
+        [SerializeField]
+        private List<SpritePart> partList_;
+
+        /// <summary>
         /// レンダラー一覧
         /// </summary>
         [SerializeField]
@@ -119,8 +125,36 @@ namespace a.spritestudio
             } else {
                 speed_ = 1f;
             }
+
             parts_ = new Dictionary<string, SpritePart>();
+            foreach ( var part in partList_ ) {
+                parts_.Add( part.name, part );
+            }
             UpdatePriority();
+        }
+
+        /// <summary>
+        /// リソースを指定してモーションを切り替え
+        /// </summary>
+        /// <param name="resource"></param>
+        public void Build( KeyFrameResource resource )
+        {
+            totalFrames_ = resource.TotalFrames;
+            currentFrame_ = 0;
+
+            foreach ( var part in parts_ ) {
+                var frames = resource.GetKeyFrames( part.Key );
+                part.Value.SetKeyFrames( frames );
+            }
+        }
+
+        /// <summary>
+        /// モーションの変更
+        /// </summary>
+        /// <param name="resource"></param>
+        public void ChangeMotion( KeyFrameResource resource )
+        {
+            Build( resource );
         }
 
         /// <summary>
@@ -181,6 +215,38 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// 座標指定
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void SetPosition( float x, float y )
+        {
+            var t = GetComponent<RectTransform>();
+            t.localPosition = new Vector3( x, y, t.localPosition.z );
+        }
+
+        /// <summary>
+        /// 拡縮指定
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void SetScale( float x, float y )
+        {
+            var t = GetComponent<RectTransform>();
+            t.localScale = new Vector3( x, y, x );
+        }
+
+        /// <summary>
+        /// 回転指定
+        /// </summary>
+        /// <param name="degree"></param>
+        public void SetRotation( float degree )
+        {
+            var t = GetComponent<RectTransform>();
+            t.localRotation = Quaternion.Euler( 0, 0, degree );
+        }
+
+        /// <summary>
         /// 優先度の更新
         /// </summary>
         public void UpdatePriority()
@@ -201,6 +267,14 @@ namespace a.spritestudio
             }
             OnComplete = null;
             OnUserData = null;
+        }
+
+        /// <summary>
+        /// 自分がいるゲームオブジェクトを破棄する
+        /// </summary>
+        public void DestroySelf()
+        {
+            Destroy( gameObject );
         }
 
         /// <summary>
@@ -274,12 +348,11 @@ namespace a.spritestudio
         /// <summary>
         /// 追加
         /// </summary>
-        /// <param name="name"></param>
         /// <param name="part"></param>
-        public void AddPart( string name, SpritePart part )
+        public void AddPart( SpritePart part )
         {
-            if ( parts_ == null ) { parts_ = new Dictionary<string, SpritePart>(); }
-            parts_.Add( name, part );
+            if ( partList_ == null ) { partList_ = new List<SpritePart>(); }
+            partList_.Add( part );
         }
 
         /// <summary>

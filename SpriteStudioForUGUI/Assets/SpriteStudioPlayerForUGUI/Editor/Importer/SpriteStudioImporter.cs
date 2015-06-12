@@ -2,6 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace a.spritestudio.editor
 {
@@ -159,8 +160,9 @@ namespace a.spritestudio.editor
                     // prefab保存
                     string name = Path.GetFileNameWithoutExtension( animation );
                     CreateFolders( basePath + name );
+                    CreateFolders( basePath + name + "/motions" );
                     foreach ( var prefab in result.animations ) {
-                        string fileName = basePath + name + "/" + prefab.name + ".prefab";
+                        string fileName = basePath + name + "/" + name + "_" + prefab.name + ".prefab";
                         var savedPrefab = AssetDatabase.LoadAssetAtPath( fileName, typeof( GameObject ) );
                         if ( savedPrefab == null ) {
                             PrefabUtility.CreatePrefab( fileName, prefab );
@@ -168,12 +170,45 @@ namespace a.spritestudio.editor
                             // 既にあるので置き換え
                             PrefabUtility.ReplacePrefab( prefab, savedPrefab );
                         }
-
                         Tracer.Log( "Save Prefab:" + fileName );
+
+                        // モーションのみのリソースを生成
+                        var resource = CreateKeyFrameResource( prefab );
+                        fileName = basePath + name + "/motions/" + prefab.name + ".asset";
+                        var savedKeys = AssetDatabase.LoadAssetAtPath( fileName, typeof( KeyFrameResource ) ) as KeyFrameResource;
+                        if ( savedPrefab == null ) {
+                            AssetDatabase.CreateAsset( resource, fileName );
+                        } else {
+                            // 既にあるので置き換え
+                            resource.CopyTo( savedKeys );
+                            EditorUtility.SetDirty( savedKeys );
+                        }
 
                         if ( tool != null ) {
                             tool.AddAnimation( name, prefab.name );
                         }
+                    }
+
+                    // パーツ構成のみでモーションが存在しないモノを保存
+                    if ( prefabs.Count > 0 ) {
+                        var skelton = (GameObject) Object.Instantiate( prefabs[0] );
+                        prefabs.Add( skelton );
+
+                        var parts = skelton.transform.GetComponentsInChildren<SpritePart>();
+                        foreach ( var part in parts ) {
+                            part.SetKeyFrames( null );
+                        }
+
+                        string fileName = basePath + name + "/" + name + ".prefab";
+                        var savedPrefab = AssetDatabase.LoadAssetAtPath( fileName, typeof( GameObject ) );
+                        if ( savedPrefab == null ) {
+                            PrefabUtility.CreatePrefab( fileName, skelton );
+                        } else {
+                            // 既にあるので置き換え
+                            PrefabUtility.ReplacePrefab( skelton, savedPrefab );
+                        }
+
+                        Tracer.Log( "Save Skelton Prefab:" + fileName );
                     }
                 }
                 if ( tool != null ) {
@@ -200,6 +235,21 @@ namespace a.spritestudio.editor
                 Directory.CreateDirectory( path );
                 AssetDatabase.ImportAsset( path );
             }
+        }
+
+        /// <summary>
+        /// キーフレームのみのデータの生成
+        /// </summary>
+        /// <param name="prefab"></param>
+        /// <returns></returns>
+        private static KeyFrameResource CreateKeyFrameResource( GameObject prefab )
+        {
+            var root = prefab.GetComponent<SpriteRoot>();
+            var parts = prefab.GetComponentsInChildren<SpritePart>();
+            var result = parts.ToDictionary(
+                ( part ) => part.name,
+                ( part ) => part.GetKeyFrames() );
+            return KeyFrameResource.Create( root.TotalFrames, result );
         }
     }
 }

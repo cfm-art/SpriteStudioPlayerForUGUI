@@ -67,9 +67,10 @@ namespace a.spritestudio
         void Start()
         {
             oldFrame_ = -1;
-            root_.AddPart( name, this );
             SetupVertices();
-            SetFrame( 0 );
+            if ( keyFrames_ != null && keyFrames_.Length > 0 ) {
+                SetFrame( 0 );
+            }
         }
 
         /// <summary>
@@ -98,10 +99,33 @@ namespace a.spritestudio
         }
 
         /// <summary>
+        /// キーフレームセットの変更
+        /// </summary>
+        /// <param name="frames"></param>
+        public void SetKeyFrames( KeyFrame[] frames )
+        {
+            keyFrames_ = frames;
+            if ( frames != null && frames.Length > 0 ) {
+                SetFrame( 0 );
+            }
+        }
+
+        /// <summary>
+        /// キーフレームセットの取得
+        /// </summary>
+        /// <returns></returns>
+        public KeyFrame[] GetKeyFrames()
+        {
+            return keyFrames_;
+        }
+
+        /// <summary>
         /// 更新
         /// </summary>
         void Update()
         {
+            if ( keyFrames_ == null || keyFrames_.Length == 0 ) { return; }
+
             // TODO: root側でするのがいいかも
             int frame = root_.CurrentFrame;
             if ( oldFrame_ != frame ) {
@@ -121,6 +145,7 @@ namespace a.spritestudio
         public void Setup( SpriteRoot root, types.NodeType nodeType, Material material )
         {
             root_ = root;
+            root.AddPart( this );
 
             isNull_ = nodeType != types.NodeType.kNormal;
             if ( !isNull_ ) {

@@ -84,7 +84,9 @@ namespace a.spritestudio.editor
                             }
 
                             // 0フレーム目で初期化
-                            sp.SetFrame( 0 );
+                            if ( sp.GetKeyFrames() != null ) {
+                                sp.SetFrame( 0 );
+                            }
                         } catch {
                             // ヒエラルキーにGOが残らないようにする
                             GameObject.DestroyImmediate( p );
