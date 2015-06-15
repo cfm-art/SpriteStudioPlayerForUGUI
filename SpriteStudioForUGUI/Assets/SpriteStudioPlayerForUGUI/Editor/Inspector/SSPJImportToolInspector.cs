@@ -17,6 +17,11 @@ namespace a.spritestudio.editor.inspector
         /// </summary>
         private bool allCheck_ = false;
 
+        /// <summary>
+        /// 折りたたみ
+        /// </summary>
+        private Dictionary<string, bool> folds_ = new Dictionary<string,bool>();
+
         public override void OnInspectorGUI()
         {
             var tool = target as SSPJImportTool;
@@ -24,8 +29,22 @@ namespace a.spritestudio.editor.inspector
                 base.OnInspectorGUI();
                 return;
             }
+            folds_ = folds_ ?? new Dictionary<string, bool>();
+
+
             GUILayout.Label( tool.name + " のインポート" );
+
             GUILayout.Label( "出力先：" + MenuItems.ExportPath );
+            if ( !SpriteStudioImporter.IsValidExportPath( MenuItems.ExportPath ) ) {
+                GUIStyleState state = new GUIStyleState();
+                state.textColor = Color.red;
+
+                GUIStyle style = new GUIStyle( GUI.skin.label );
+                style.normal = state;
+
+                GUILayout.Label( "出力先パスが正しくない可能性があります。\nメニューの「SpriteStudioForUGUI/出力先設定」\nから設定してください。", style );
+                GUILayout.Space( 12 );
+            }
 
             // セルマップ
             GUILayout.Label( "セルマップ" );
@@ -60,12 +79,17 @@ namespace a.spritestudio.editor.inspector
                 using ( new Horizontal() ) {
                     GUILayout.Space( 12 );
                     using ( new Vertical() ) {
-                        GUILayout.Label( first.File );
-                        foreach ( var animation in group ) {
-                            using ( new Horizontal() ) {
-                                GUILayout.Space( 20 );
-                                animation.IsImport = GUILayout.Toggle( animation.IsImport, "", GUILayout.MaxWidth( 24 ) );
-                                GUILayout.Label( animation.Animation );
+                        bool fold;
+                        fold = EditorGUILayout.Foldout(
+                                    folds_.TryGetValue( first.File, out fold ) && fold,
+                                    first.File );
+                        if ( folds_[first.File] = fold ) {
+                            foreach ( var animation in group ) {
+                                using ( new Horizontal() ) {
+                                    GUILayout.Space( 12 );
+                                    animation.IsImport = GUILayout.Toggle( animation.IsImport, "", GUILayout.MaxWidth( 24 ) );
+                                    GUILayout.Label( animation.Animation );
+                                }
                             }
                         }
                     }
@@ -80,7 +104,7 @@ namespace a.spritestudio.editor.inspector
             // インポートボタン
             if ( GUILayout.Button( "インポート" ) ) {
                 Tracer.enable = MenuItems.ImportLog;
-                Tracer.Startup();
+                Tracer.Startup( MenuItems.LogLevel );
                 Tracer.Log( "Start import : " + tool.name );
                 var targets = tool.Targets;
                 SpriteStudioImporter.Import( tool.FullPath, targets );

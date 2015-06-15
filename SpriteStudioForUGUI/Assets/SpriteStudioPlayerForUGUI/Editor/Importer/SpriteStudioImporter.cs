@@ -30,7 +30,7 @@ namespace a.spritestudio.editor
                 if ( str.EndsWith( ".sspj" ) ) {
                     bool isAutoImport = EditorPrefs.GetBool( "assfugui-ai", false );
                     Tracer.enable = MenuItems.ImportLog;
-                    Tracer.Startup();
+                    Tracer.Startup( MenuItems.LogLevel );
                     Tracer.Log( "Start import : " + str );
                     if ( isAutoImport ) {
                         Import( str, null );
@@ -83,7 +83,14 @@ namespace a.spritestudio.editor
         internal static void Import( string file, SSPJImportTool.TargetAnimation[] targets )
         {
             // TODO: 出力先は自由に出来るようにする
-            string exportPath = MenuItems.ExportPath + Path.GetFileNameWithoutExtension( file ) + "/";
+            string exportPath = (MenuItems.ExportPath + Path.GetFileNameWithoutExtension( file ) + "/").Trim();
+
+            // 出力先が妥当かを簡単にチェック
+            if ( !IsValidExportPath( exportPath ) ) {
+                if ( !EditorUtility.DisplayDialog( "注意", "出力先パスが不正な可能性があります。\n" + exportPath, "続行", "キャンセル" ) ) {
+                    return;
+                }
+            }
 
             string path = Path.GetDirectoryName( file );
 
@@ -256,6 +263,17 @@ namespace a.spritestudio.editor
                 ( part ) => part.name,
                 ( part ) => part.GetKeyFrames() );
             return KeyFrameResource.Create( root.TotalFrames, result );
+        }
+
+        /// <summary>
+        /// 出力先パスが妥当かを簡単に判定
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool IsValidExportPath( string path )
+        {
+            // Assetsから始まっていない、..(上の階層)が含まれるものははじく
+            return path.TrimStart().StartsWith( "Assets/" ) && !path.Contains( ".." );
         }
     }
 }

@@ -32,6 +32,16 @@ namespace a.spritestudio.editor
         }
 
         /// <summary>
+        /// 整数からログレベルへ
+        /// </summary>
+        /// <param name="no"></param>
+        /// <returns></returns>
+        public static Level IntToLevel( int no )
+        {
+            return (Level) no;
+        }
+
+        /// <summary>
         /// 有効無効
         /// </summary>
         public static bool enable = true;
