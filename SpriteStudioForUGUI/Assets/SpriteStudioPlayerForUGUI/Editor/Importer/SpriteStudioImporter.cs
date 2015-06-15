@@ -161,33 +161,6 @@ namespace a.spritestudio.editor
                     string name = Path.GetFileNameWithoutExtension( animation );
                     CreateFolders( basePath + name );
                     CreateFolders( basePath + name + "/motions" );
-                    foreach ( var prefab in result.animations ) {
-                        string fileName = basePath + name + "/" + name + "_" + prefab.name + ".prefab";
-                        var savedPrefab = AssetDatabase.LoadAssetAtPath( fileName, typeof( GameObject ) );
-                        if ( savedPrefab == null ) {
-                            PrefabUtility.CreatePrefab( fileName, prefab );
-                        } else {
-                            // 既にあるので置き換え
-                            PrefabUtility.ReplacePrefab( prefab, savedPrefab );
-                        }
-                        Tracer.Log( "Save Prefab:" + fileName );
-
-                        // モーションのみのリソースを生成
-                        var resource = CreateKeyFrameResource( prefab );
-                        fileName = basePath + name + "/motions/" + prefab.name + ".asset";
-                        var savedKeys = AssetDatabase.LoadAssetAtPath( fileName, typeof( KeyFrameResource ) ) as KeyFrameResource;
-                        if ( savedPrefab == null ) {
-                            AssetDatabase.CreateAsset( resource, fileName );
-                        } else {
-                            // 既にあるので置き換え
-                            resource.CopyTo( savedKeys );
-                            EditorUtility.SetDirty( savedKeys );
-                        }
-
-                        if ( tool != null ) {
-                            tool.AddAnimation( name, prefab.name );
-                        }
-                    }
 
                     // パーツ構成のみでモーションが存在しないモノを保存
                     if ( prefabs.Count > 0 ) {
@@ -202,13 +175,46 @@ namespace a.spritestudio.editor
                         string fileName = basePath + name + "/" + name + ".prefab";
                         var savedPrefab = AssetDatabase.LoadAssetAtPath( fileName, typeof( GameObject ) );
                         if ( savedPrefab == null ) {
+                            Tracer.Log( "Create Skelton Prefab:" + fileName );
                             PrefabUtility.CreatePrefab( fileName, skelton );
                         } else {
                             // 既にあるので置き換え
-                            PrefabUtility.ReplacePrefab( skelton, savedPrefab );
+                            Tracer.Log( "Replace Skelton Prefab:" + fileName );
+                            PrefabUtility.ReplacePrefab( skelton, savedPrefab, ReplacePrefabOptions.Default );
+                        }
+                    }
+                    
+                    foreach ( var prefab in result.animations ) {
+                        // パーツ＋モーションのprefab生成
+                        string fileName = basePath + name + "/" + name + "_" + prefab.name + ".prefab";
+                        var savedPrefab = AssetDatabase.LoadAssetAtPath( fileName, typeof( GameObject ) );
+                        if ( savedPrefab == null ) {
+                            Tracer.Log( "Create Prefab:" + fileName );
+                            PrefabUtility.CreatePrefab( fileName, prefab );
+                        } else {
+                            // 既にあるので置き換え
+                            Tracer.Log( "Replace Prefab:" + fileName + "/" + savedPrefab );
+                            // XXX: 置換方式がDefaultだと、Prefab内にPrefabが格納されてしまう。。。
+                            PrefabUtility.ReplacePrefab( prefab, savedPrefab, ReplacePrefabOptions.ReplaceNameBased );
                         }
 
-                        Tracer.Log( "Save Skelton Prefab:" + fileName );
+                        // モーションのみのリソースを生成
+                        var resource = CreateKeyFrameResource( prefab );
+                        fileName = basePath + name + "/motions/" + prefab.name + ".asset";
+                        var savedKeys = AssetDatabase.LoadAssetAtPath( fileName, typeof( KeyFrameResource ) ) as KeyFrameResource;
+                        if ( savedPrefab == null ) {
+                            Tracer.Log( "Create Motion:" + fileName );
+                            AssetDatabase.CreateAsset( resource, fileName );
+                        } else {
+                            // 既にあるので置き換え
+                            resource.CopyTo( savedKeys );
+                            EditorUtility.SetDirty( savedKeys );
+                            Tracer.Log( "Replace Motion:" + fileName );
+                        }
+
+                        if ( tool != null ) {
+                            tool.AddAnimation( name, prefab.name );
+                        }
                     }
                 }
                 if ( tool != null ) {

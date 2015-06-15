@@ -61,7 +61,35 @@ namespace a.spritestudio.editor
         public static void Dump()
         {
             if ( log_.Length > 0 ) {
-                Debug.Log( log_ );
+                Debug.Log( "SSPJImporter begins dump." );
+                const int tail = (65000 / 6 - 6);
+                if ( log_.Length > tail ) {
+                    for ( int i = 0; i < log_.Length; ) {
+                        int length = log_.Length - i;
+                        if ( length > tail ) {
+                            // 分割
+                            bool isLog = false;
+                            for ( int j = tail - 1; j > 0; --j ) {
+                                if ( log_[i + j] == '\n' ) {
+                                    Debug.Log( log_.ToString( i, j ) );
+                                    i += j + 1;
+                                    isLog = true;
+                                    break;
+                                }
+                            }
+                            if ( !isLog ) {
+                                Debug.Log( log_.ToString( i, tail ) );
+                                i += tail;
+                            }
+                        } else {
+                            Debug.Log( log_.ToString( i, length ) );
+                            break;
+                        }
+                    }
+                } else {
+                    Debug.Log( log_.ToString() );
+                }
+                Debug.Log( "end." );
             }
         }
 
