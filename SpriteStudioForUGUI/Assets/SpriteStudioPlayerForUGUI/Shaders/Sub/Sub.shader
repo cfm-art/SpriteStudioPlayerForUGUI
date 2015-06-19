@@ -1,4 +1,5 @@
-Shader "aSpriteStudio/Sub"
+// テクセルを減算・頂点カラーを減算
+Shader "aSpriteStudio/Sub/Sub"
 {
 	Properties
 	{
@@ -49,9 +50,9 @@ Shader "aSpriteStudio/Sub"
 		{
 		CGPROGRAM
 			#pragma vertex vert_sub
-			#pragma fragment frag
+			#pragma fragment frag_sub
 			#include "UnityCG.cginc"
-			#include "Common.cginc"
+			#include "../Common.cginc"
 		ENDCG
 		}
 	}

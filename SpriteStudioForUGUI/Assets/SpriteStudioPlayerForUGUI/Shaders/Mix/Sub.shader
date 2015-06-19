@@ -1,4 +1,5 @@
-Shader "aSpriteStudio/Sub"
+// テクセルをαブレンド・頂点カラーを減算
+Shader "aSpriteStudio/Mix/Sub"
 {
 	Properties
 	{
@@ -39,19 +40,16 @@ Shader "aSpriteStudio/Sub"
 		ZWrite Off
 		ZTest [unity_GUIZTestMode]
 		Fog { Mode Off }
-		//Blend OneMinusDstColor Zero, SrcAlpha One
-		Blend SrcColor DstColor, SrcAlpha OneMinusSrcAlpha
-        BlendOp RevSub, Add
-
+		Blend SrcAlpha OneMinusSrcAlpha
 		ColorMask [_ColorMask]
 
 		Pass
 		{
 		CGPROGRAM
-			#pragma vertex vert_sub
-			#pragma fragment frag
+			#pragma vertex vert
+			#pragma fragment frag_sub
 			#include "UnityCG.cginc"
-			#include "Common.cginc"
+			#include "../Common.cginc"
 		ENDCG
 		}
 	}
