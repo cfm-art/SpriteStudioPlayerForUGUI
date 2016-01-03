@@ -161,7 +161,7 @@ namespace a.spritestudio.editor
                     // GameObjectへ変換
                     var converter = new SSAEConverter();
                     var result = converter.Convert( projectInformation,
-                            ssaeInformation, cellMap, materials );
+                            ssaeInformation, cellMap, materials, path );
                     prefabs.AddRange( result.animations );
 
                     // prefab保存
@@ -259,6 +259,7 @@ namespace a.spritestudio.editor
         {
             var root = prefab.GetComponent<SpriteRoot>();
             var parts = prefab.GetComponentsInChildren<SpritePart>();
+            parts.All( ( o ) => { UnityEngine.Debug.Log(o.name); return true; } );
             var result = parts.ToDictionary(
                 ( part ) => part.name,
                 ( part ) => part.GetKeyFrames() );

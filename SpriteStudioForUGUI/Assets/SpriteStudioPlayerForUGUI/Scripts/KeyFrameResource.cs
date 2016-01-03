@@ -72,8 +72,10 @@ namespace a.spritestudio
             self.totalFrames_ = totalFrames;
 
             foreach ( var frame in frames ) {
-                self.partsNames_.Add( frame.Key );
-                self.keyFrames_.Add( new KeyFrames( frame.Value ) );
+                if ( frame.Value != null ) {
+                    self.partsNames_.Add( frame.Key );
+                    self.keyFrames_.Add( new KeyFrames( frame.Value ) );
+                }
             }
             return self;
         }

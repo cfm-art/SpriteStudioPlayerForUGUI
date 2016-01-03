@@ -147,7 +147,7 @@ namespace a.spritestudio
             root_ = root;
             root.AddPart( this );
 
-            isNull_ = nodeType != types.NodeType.kNormal;
+            isNull_ = nodeType == types.NodeType.kNull;
             if ( !isNull_ ) {
                 // NULLノードでなければレンダラ生成
                 var r = new GameObject( name, typeof( SpritePartRenderer ) );

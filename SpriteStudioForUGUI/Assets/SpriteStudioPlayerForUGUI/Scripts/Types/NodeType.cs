@@ -3,7 +3,8 @@
     public enum NodeType
     {
         kNull,
-        kNormal
+        kNormal,
+        kInstance
     }
 
     public static class NodeTypeOperator
@@ -13,6 +14,9 @@
             switch ( v ) {
                 case "null":
                     return NodeType.kNull;
+
+                case "instance":
+                    return NodeType.kInstance;
 
                 default:
                     return NodeType.kNormal;

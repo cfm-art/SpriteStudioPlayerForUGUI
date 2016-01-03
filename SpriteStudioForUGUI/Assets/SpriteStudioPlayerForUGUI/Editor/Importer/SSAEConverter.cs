@@ -22,11 +22,13 @@ namespace a.spritestudio.editor
         /// <param name="animationData"></param>
         /// <param name="cellMaps"></param>
         /// <param name="materials"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
         public Result Convert( SSPJImporter.Information projectInformation,
                 SSAEImporter.Information animationData,
                 List<CellMap> cellMaps,
-                Dictionary<types.AlphaBlendType, Material> materials )
+                Dictionary<types.AlphaBlendType, Material> materials,
+                string path )
         {
             List<GameObject> results = new List<GameObject>( animationData.animations.Count );
 
@@ -60,32 +62,52 @@ namespace a.spritestudio.editor
                     foreach ( var part in animationData.parts ) {
                         var p = new GameObject( part.name, typeof( SpritePart ) );
                         try {
-                            var sp = p.GetComponent<SpritePart>();
-
                             // 親子の設定
                             if ( part.parent < 0 ) {
                                 p.transform.SetParent( o.transform, false );
                             } else {
                                 p.transform.SetParent( partsObjects[part.parent].transform, false );
                             }
-                            partsObjects.Add( part.index, p );
-
-                            // パーツの初期化
-                            Material material;
-                            materials.TryGetValue( part.blendType, out material );
-                            sp.Setup( root, part.type, material );
-
-                            // このパーツに対するアニメーションを探す
-                            foreach ( var a in anime.parts ) {
-                                if ( a.partName == part.name ) {
-                                    MakeAttributes( sp, a );
-                                    break;
+                            if ( part.type == types.NodeType.kInstance ) {
+                                // インスタンス
+                                string[] names = part.name.Split( ':' );
+                                SSAEImporter.Information instanceData = new SSAEImporter().Import( path + '\\' + names[0] + ".ssae", null, null );
+                                Result instance = Convert( projectInformation, instanceData, cellMaps, materials, path );
+                                foreach ( var i in instance.animations ) {
+                                    if ( i.name == names[1] ) {
+                                        var prefix = part.name + ':';
+                                        var r = i.GetComponent<SpriteRoot>();
+                                        r.name = prefix + r.name;
+                                        foreach ( var c in r.GetComponentsInChildren<SpritePart>() ) {
+                                            c.name = prefix + c.name;
+                                        }
+                                        i.transform.SetParent( p.transform );
+                                    } else {
+                                        GameObject.DestroyImmediate( i );
+                                    }
                                 }
-                            }
+                            } else {
+                                var sp = p.GetComponent<SpritePart>();
+                                // 通常パーツ
+                                partsObjects.Add( part.index, p );
 
-                            // 0フレーム目で初期化
-                            if ( sp.GetKeyFrames() != null ) {
-                                sp.SetFrame( 0 );
+                                // パーツの初期化
+                                Material material;
+                                materials.TryGetValue( part.blendType, out material );
+                                sp.Setup( root, part.type, material );
+
+                                // このパーツに対するアニメーションを探す
+                                foreach ( var a in anime.parts ) {
+                                    if ( a.partName == part.name ) {
+                                        MakeAttributes( sp, a );
+                                        break;
+                                    }
+                                }
+
+                                // 0フレーム目で初期化
+                                if ( sp.GetKeyFrames() != null ) {
+                                    sp.SetFrame( 0 );
+                                }
                             }
                         } catch {
                             // ヒエラルキーにGOが残らないようにする
