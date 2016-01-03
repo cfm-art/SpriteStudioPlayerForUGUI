@@ -381,8 +381,10 @@ namespace a.spritestudio
             vertices_[index] = vertex;
         }
 
+        #region メッシュ生成 (Unityのバージョン差分あり)
+#if UNITY_4 || UNITY_5_1 || UNITY_5_0
         /// <summary>
-        /// 
+        /// メッシュ生成(Unity5.1以前)
         /// </summary>
         /// <param name="vbo"></param>
         protected override void OnFillVBO( List<UIVertex> vbo )
@@ -404,5 +406,61 @@ namespace a.spritestudio
                 vbo.AddRange( vertices_ );
             }
         }
+
+
+#elif UNITY_5_2
+        /// <summary>
+        /// メッシュ生成 (5.2版)
+        /// </summary>
+        /// <param name="vh"></param>
+        protected override void OnPopulateMesh( Mesh mesh )
+        {
+            using ( var vh = new VertexHelper( mesh ) ) {
+                if ( vertices_ != null ) {
+                    if ( oldColor_ != color ) {
+                        int count = vertices_.Count;
+                        for ( int i = 0; i < count; ++i ) {
+                            var v = vertices_[i];
+                            v.color = color;
+                            vertices_[i] = v;
+                        }
+                    }
+                    //UpdateVertices( false );
+                    vh.AddUIVertexQuad( vertices_.ToArray() );
+                } else {
+                    SetupVertices();
+                    UpdateVertices( false );
+                    vh.AddUIVertexQuad( vertices_.ToArray() );
+                }
+            }
+        }
+
+#else
+        /// <summary>
+        /// メッシュ生成(5.3以降版)
+        /// </summary>
+        /// <param name="vh"></param>
+        protected override void OnPopulateMesh( VertexHelper vh )
+        {
+            vh.Clear();
+            if ( vertices_ != null ) {
+                if ( oldColor_ != color ) {
+                    int count = vertices_.Count;
+                    for ( int i = 0; i < count; ++i ) {
+                        var v = vertices_[i];
+                        v.color = color;
+                        vertices_[i] = v;
+                    }
+                }
+                //UpdateVertices( false );
+                vh.AddUIVertexQuad( vertices_.ToArray() );
+            } else {
+                SetupVertices();
+                UpdateVertices( false );
+                vh.AddUIVertexQuad( vertices_.ToArray() );
+            }
+        }
+#endif
+        #endregion
     }
 }
