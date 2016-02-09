@@ -271,7 +271,11 @@ namespace a.spritestudio
             var pivot = cellMap_.Pivot( mapIndex );
             position_ = new Vector3( size_.x * -pivot.x, size_.y * -pivot.y, 0 );
             rectTransform.pivot = pivot;
+            rectTransform.SetSizeWithCurrentAnchors( RectTransform.Axis.Horizontal, size_.x );
+            rectTransform.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, size_.y );
             part_.GetComponent<RectTransform>().pivot = rectTransform.pivot;
+            part_.GetComponent<RectTransform>().SetSizeWithCurrentAnchors( RectTransform.Axis.Horizontal, size_.x );
+            part_.GetComponent<RectTransform>().SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, size_.y );
             
             UpdateVertices();
             SetMaterialDirty();
